@@ -128,7 +128,7 @@ AudioSpec :: struct {
 AudioStream :: rawptr
 AudioStreamCallback :: #type proc "c" (
 	userdata: rawptr,
-	stream: ^AudioStream,
+	stream: AudioStream,
 	additional_amount: i32,
 	total_amount: i32,
 )
@@ -482,7 +482,7 @@ DisplayMode :: struct {
 	refresh_rate:             f32,
 	refresh_rate_numerator:   i32,
 	refresh_rate_denominator: i32,
-	internal:                 ^DisplayModeData,
+	internal:                 DisplayModeData,
 }
 DisplayOrientation :: enum u32 {
 	ORIENTATION_UNKNOWN           = 0,
@@ -526,13 +526,13 @@ FlashOperation :: enum u32 {
 	FLASH_UNTIL_FOCUSED = 2,
 }
 GLContextState :: rawptr
-GLContext :: ^GLContextState
+GLContext :: GLContextState
 EGLDisplay :: rawptr
 EGLConfig :: rawptr
 EGLSurface :: rawptr
 EGLAttrib :: i64
 EGLint :: i32
-EGLAttribArrayCallback :: #type proc "c" (userdata: rawptr) -> ^EGLAttrib
+EGLAttribArrayCallback :: #type proc "c" (userdata: rawptr) -> EGLAttrib
 EGLIntArrayCallback :: #type proc "c" (
 	userdata: rawptr,
 	display: EGLDisplay,
@@ -1961,17 +1961,17 @@ GPUViewport :: struct {
 	max_depth: f32,
 }
 GPUTextureTransferInfo :: struct {
-	transfer_buffer: ^GPUTransferBuffer,
+	transfer_buffer: GPUTransferBuffer,
 	offset:          u32,
 	pixels_per_row:  u32,
 	rows_per_layer:  u32,
 }
 GPUTransferBufferLocation :: struct {
-	transfer_buffer: ^GPUTransferBuffer,
+	transfer_buffer: GPUTransferBuffer,
 	offset:          u32,
 }
 GPUTextureLocation :: struct {
-	texture:   ^GPUTexture,
+	texture:   GPUTexture,
 	mip_level: u32,
 	layer:     u32,
 	x:         u32,
@@ -1979,7 +1979,7 @@ GPUTextureLocation :: struct {
 	z:         u32,
 }
 GPUTextureRegion :: struct {
-	texture:   ^GPUTexture,
+	texture:   GPUTexture,
 	mip_level: u32,
 	layer:     u32,
 	x:         u32,
@@ -1990,7 +1990,7 @@ GPUTextureRegion :: struct {
 	d:         u32,
 }
 GPUBlitRegion :: struct {
-	texture:              ^GPUTexture,
+	texture:              GPUTexture,
 	mip_level:            u32,
 	layer_or_depth_plane: u32,
 	x:                    u32,
@@ -1999,11 +1999,11 @@ GPUBlitRegion :: struct {
 	h:                    u32,
 }
 GPUBufferLocation :: struct {
-	buffer: ^GPUBuffer,
+	buffer: GPUBuffer,
 	offset: u32,
 }
 GPUBufferRegion :: struct {
-	buffer: ^GPUBuffer,
+	buffer: GPUBuffer,
 	offset: u32,
 	size:   u32,
 }
@@ -2160,8 +2160,8 @@ GPUGraphicsPipelineTargetInfo :: struct {
 	padding3:                  u8,
 }
 GPUGraphicsPipelineCreateInfo :: struct {
-	vertex_shader:       ^GPUShader,
-	fragment_shader:     ^GPUShader,
+	vertex_shader:       GPUShader,
+	fragment_shader:     GPUShader,
 	vertex_input_state:  GPUVertexInputState,
 	primitive_type:      GPUPrimitiveType,
 	rasterizer_state:    GPURasterizerState,
@@ -2187,13 +2187,13 @@ GPUComputePipelineCreateInfo :: struct {
 	props:                          PropertiesID,
 }
 GPUColorTargetInfo :: struct {
-	texture:               ^GPUTexture,
+	texture:               GPUTexture,
 	mip_level:             u32,
 	layer_or_depth_plane:  u32,
 	clear_color:           FColor,
 	load_op:               GPULoadOp,
 	store_op:              GPUStoreOp,
-	resolve_texture:       ^GPUTexture,
+	resolve_texture:       GPUTexture,
 	resolve_mip_level:     u32,
 	resolve_layer:         u32,
 	cycle:                 b8,
@@ -2202,7 +2202,7 @@ GPUColorTargetInfo :: struct {
 	padding2:              u8,
 }
 GPUDepthStencilTargetInfo :: struct {
-	texture:          ^GPUTexture,
+	texture:          GPUTexture,
 	clear_depth:      f32,
 	load_op:          GPULoadOp,
 	store_op:         GPUStoreOp,
@@ -2226,22 +2226,22 @@ GPUBlitInfo :: struct {
 	padding3:    u8,
 }
 GPUBufferBinding :: struct {
-	buffer: ^GPUBuffer,
+	buffer: GPUBuffer,
 	offset: u32,
 }
 GPUTextureSamplerBinding :: struct {
-	texture: ^GPUTexture,
-	sampler: ^GPUSampler,
+	texture: GPUTexture,
+	sampler: GPUSampler,
 }
 GPUStorageBufferReadWriteBinding :: struct {
-	buffer:   ^GPUBuffer,
+	buffer:   GPUBuffer,
 	cycle:    b8,
 	padding1: u8,
 	padding2: u8,
 	padding3: u8,
 }
 GPUStorageTextureReadWriteBinding :: struct {
-	texture:   ^GPUTexture,
+	texture:   GPUTexture,
 	mip_level: u32,
 	layer:     u32,
 	cycle:     b8,
@@ -2569,9 +2569,8 @@ StorageInterface :: struct {
 	space_remaining: space_remaining_func_ptr_anon_30,
 }
 Storage :: rawptr
-_XEvent :: rawptr
-XEvent :: _XEvent
-X11EventHook :: #type proc "c" (userdata: rawptr, xevent: ^XEvent) -> b8
+XEvent :: rawptr
+X11EventHook :: #type proc "c" (userdata: rawptr, xevent: XEvent) -> b8
 Sandbox :: enum u32 {
 	SANDBOX_NONE              = 0,
 	SANDBOX_UNKNOWN_CONTAINER = 1,
@@ -2654,93 +2653,93 @@ foreign sdl3_runic {
 	ClearProperty :: proc(props: PropertiesID, name: cstring) -> b8 ---
 	EnumerateProperties :: proc(props: PropertiesID, callback: EnumeratePropertiesCallback, userdata: rawptr) -> b8 ---
 	DestroyProperties :: proc(props: PropertiesID) ---
-	CreateThreadRuntime :: proc(fn: ThreadFunction, name: cstring, data: rawptr, pfnBeginThread: #type proc "c" (), pfnEndThread: #type proc "c" ()) -> ^Thread ---
-	CreateThreadWithPropertiesRuntime :: proc(props: PropertiesID, pfnBeginThread: #type proc "c" (), pfnEndThread: #type proc "c" ()) -> ^Thread ---
-	GetThreadName :: proc(thread: ^Thread) -> cstring ---
+	CreateThreadRuntime :: proc(fn: ThreadFunction, name: cstring, data: rawptr, pfnBeginThread: #type proc "c" (), pfnEndThread: #type proc "c" ()) -> Thread ---
+	CreateThreadWithPropertiesRuntime :: proc(props: PropertiesID, pfnBeginThread: #type proc "c" (), pfnEndThread: #type proc "c" ()) -> Thread ---
+	GetThreadName :: proc(thread: Thread) -> cstring ---
 	GetCurrentThreadID :: proc() -> ThreadID ---
-	GetThreadID :: proc(thread: ^Thread) -> ThreadID ---
+	GetThreadID :: proc(thread: Thread) -> ThreadID ---
 	SetCurrentThreadPriority :: proc(priority: ThreadPriority) -> b8 ---
-	WaitThread :: proc(thread: ^Thread, status: [^]i32) ---
-	DetachThread :: proc(thread: ^Thread) ---
+	WaitThread :: proc(thread: Thread, status: [^]i32) ---
+	DetachThread :: proc(thread: Thread) ---
 	GetTLS :: proc(id: ^TLSID) -> rawptr ---
 	SetTLS :: proc(id: ^TLSID, value: rawptr, destructor: TLSDestructorCallback) -> b8 ---
 	CleanupTLS :: proc() ---
-	CreateMutex :: proc() -> ^Mutex ---
-	LockMutex :: proc(mutex: ^Mutex) ---
-	TryLockMutex :: proc(mutex: ^Mutex) -> b8 ---
-	UnlockMutex :: proc(mutex: ^Mutex) ---
-	DestroyMutex :: proc(mutex: ^Mutex) ---
-	CreateRWLock :: proc() -> ^RWLock ---
-	LockRWLockForReading :: proc(rwlock: ^RWLock) ---
-	LockRWLockForWriting :: proc(rwlock: ^RWLock) ---
-	TryLockRWLockForReading :: proc(rwlock: ^RWLock) -> b8 ---
-	TryLockRWLockForWriting :: proc(rwlock: ^RWLock) -> b8 ---
-	UnlockRWLock :: proc(rwlock: ^RWLock) ---
-	DestroyRWLock :: proc(rwlock: ^RWLock) ---
-	CreateSemaphore :: proc(initial_value: u32) -> ^Semaphore ---
-	DestroySemaphore :: proc(sem: ^Semaphore) ---
-	WaitSemaphore :: proc(sem: ^Semaphore) ---
-	TryWaitSemaphore :: proc(sem: ^Semaphore) -> b8 ---
-	WaitSemaphoreTimeout :: proc(sem: ^Semaphore, timeoutMS: i32) -> b8 ---
-	SignalSemaphore :: proc(sem: ^Semaphore) ---
-	GetSemaphoreValue :: proc(sem: ^Semaphore) -> u32 ---
-	CreateCondition :: proc() -> ^Condition ---
-	DestroyCondition :: proc(cond: ^Condition) ---
-	SignalCondition :: proc(cond: ^Condition) ---
-	BroadcastCondition :: proc(cond: ^Condition) ---
-	WaitCondition :: proc(cond: ^Condition, mutex: ^Mutex) ---
-	WaitConditionTimeout :: proc(cond: ^Condition, mutex: ^Mutex, timeoutMS: i32) -> b8 ---
+	CreateMutex :: proc() -> Mutex ---
+	LockMutex :: proc(mutex: Mutex) ---
+	TryLockMutex :: proc(mutex: Mutex) -> b8 ---
+	UnlockMutex :: proc(mutex: Mutex) ---
+	DestroyMutex :: proc(mutex: Mutex) ---
+	CreateRWLock :: proc() -> RWLock ---
+	LockRWLockForReading :: proc(rwlock: RWLock) ---
+	LockRWLockForWriting :: proc(rwlock: RWLock) ---
+	TryLockRWLockForReading :: proc(rwlock: RWLock) -> b8 ---
+	TryLockRWLockForWriting :: proc(rwlock: RWLock) -> b8 ---
+	UnlockRWLock :: proc(rwlock: RWLock) ---
+	DestroyRWLock :: proc(rwlock: RWLock) ---
+	CreateSemaphore :: proc(initial_value: u32) -> Semaphore ---
+	DestroySemaphore :: proc(sem: Semaphore) ---
+	WaitSemaphore :: proc(sem: Semaphore) ---
+	TryWaitSemaphore :: proc(sem: Semaphore) -> b8 ---
+	WaitSemaphoreTimeout :: proc(sem: Semaphore, timeoutMS: i32) -> b8 ---
+	SignalSemaphore :: proc(sem: Semaphore) ---
+	GetSemaphoreValue :: proc(sem: Semaphore) -> u32 ---
+	CreateCondition :: proc() -> Condition ---
+	DestroyCondition :: proc(cond: Condition) ---
+	SignalCondition :: proc(cond: Condition) ---
+	BroadcastCondition :: proc(cond: Condition) ---
+	WaitCondition :: proc(cond: Condition, mutex: Mutex) ---
+	WaitConditionTimeout :: proc(cond: Condition, mutex: Mutex, timeoutMS: i32) -> b8 ---
 	ShouldInit :: proc(state: ^InitState) -> b8 ---
 	ShouldQuit :: proc(state: ^InitState) -> b8 ---
 	SetInitialized :: proc(state: ^InitState, initialized: b8) ---
-	IOFromFile :: proc(file: cstring, mode: cstring) -> ^IOStream ---
-	IOFromMem :: proc(mem: rawptr, size: u64) -> ^IOStream ---
-	IOFromConstMem :: proc(mem: rawptr, size: u64) -> ^IOStream ---
-	IOFromDynamicMem :: proc() -> ^IOStream ---
-	OpenIO :: proc(iface: ^IOStreamInterface, userdata: rawptr) -> ^IOStream ---
-	CloseIO :: proc(context_p: ^IOStream) -> b8 ---
-	GetIOProperties :: proc(context_p: ^IOStream) -> PropertiesID ---
-	GetIOStatus :: proc(context_p: ^IOStream) -> IOStatus ---
-	GetIOSize :: proc(context_p: ^IOStream) -> i64 ---
-	SeekIO :: proc(context_p: ^IOStream, offset: i64, whence: IOWhence) -> i64 ---
-	TellIO :: proc(context_p: ^IOStream) -> i64 ---
-	ReadIO :: proc(context_p: ^IOStream, ptr: rawptr, size: u64) -> u64 ---
-	WriteIO :: proc(context_p: ^IOStream, ptr: rawptr, size: u64) -> u64 ---
-	IOprintf :: proc(context_p: ^IOStream, fmt: cstring, #c_vararg var_args: ..any) -> u64 ---
-	IOvprintf :: proc(context_p: ^IOStream, fmt: cstring, #c_vararg var_args: ..any) -> u64 ---
-	FlushIO :: proc(context_p: ^IOStream) -> b8 ---
-	LoadFile_IO :: proc(src: ^IOStream, datasize: ^u64, closeio: b8) -> rawptr ---
+	IOFromFile :: proc(file: cstring, mode: cstring) -> IOStream ---
+	IOFromMem :: proc(mem: rawptr, size: u64) -> IOStream ---
+	IOFromConstMem :: proc(mem: rawptr, size: u64) -> IOStream ---
+	IOFromDynamicMem :: proc() -> IOStream ---
+	OpenIO :: proc(iface: ^IOStreamInterface, userdata: rawptr) -> IOStream ---
+	CloseIO :: proc(context_p: IOStream) -> b8 ---
+	GetIOProperties :: proc(context_p: IOStream) -> PropertiesID ---
+	GetIOStatus :: proc(context_p: IOStream) -> IOStatus ---
+	GetIOSize :: proc(context_p: IOStream) -> i64 ---
+	SeekIO :: proc(context_p: IOStream, offset: i64, whence: IOWhence) -> i64 ---
+	TellIO :: proc(context_p: IOStream) -> i64 ---
+	ReadIO :: proc(context_p: IOStream, ptr: rawptr, size: u64) -> u64 ---
+	WriteIO :: proc(context_p: IOStream, ptr: rawptr, size: u64) -> u64 ---
+	IOprintf :: proc(context_p: IOStream, fmt: cstring, #c_vararg var_args: ..any) -> u64 ---
+	IOvprintf :: proc(context_p: IOStream, fmt: cstring, #c_vararg var_args: ..any) -> u64 ---
+	FlushIO :: proc(context_p: IOStream) -> b8 ---
+	LoadFile_IO :: proc(src: IOStream, datasize: ^u64, closeio: b8) -> rawptr ---
 	LoadFile :: proc(file: cstring, datasize: ^u64) -> rawptr ---
-	SaveFile_IO :: proc(src: ^IOStream, data: rawptr, datasize: u64, closeio: b8) -> b8 ---
+	SaveFile_IO :: proc(src: IOStream, data: rawptr, datasize: u64, closeio: b8) -> b8 ---
 	SaveFile :: proc(file: cstring, data: rawptr, datasize: u64) -> b8 ---
-	ReadU8 :: proc(src: ^IOStream, value: ^u8) -> b8 ---
-	ReadS8 :: proc(src: ^IOStream, value: ^i8) -> b8 ---
-	ReadU16LE :: proc(src: ^IOStream, value: ^u16) -> b8 ---
-	ReadS16LE :: proc(src: ^IOStream, value: ^i16) -> b8 ---
-	ReadU16BE :: proc(src: ^IOStream, value: ^u16) -> b8 ---
-	ReadS16BE :: proc(src: ^IOStream, value: ^i16) -> b8 ---
-	ReadU32LE :: proc(src: ^IOStream, value: ^u32) -> b8 ---
-	ReadS32LE :: proc(src: ^IOStream, value: ^i32) -> b8 ---
-	ReadU32BE :: proc(src: ^IOStream, value: ^u32) -> b8 ---
-	ReadS32BE :: proc(src: ^IOStream, value: ^i32) -> b8 ---
-	ReadU64LE :: proc(src: ^IOStream, value: ^u64) -> b8 ---
-	ReadS64LE :: proc(src: ^IOStream, value: ^i64) -> b8 ---
-	ReadU64BE :: proc(src: ^IOStream, value: ^u64) -> b8 ---
-	ReadS64BE :: proc(src: ^IOStream, value: ^i64) -> b8 ---
-	WriteU8 :: proc(dst: ^IOStream, value: u8) -> b8 ---
-	WriteS8 :: proc(dst: ^IOStream, value: i8) -> b8 ---
-	WriteU16LE :: proc(dst: ^IOStream, value: u16) -> b8 ---
-	WriteS16LE :: proc(dst: ^IOStream, value: i16) -> b8 ---
-	WriteU16BE :: proc(dst: ^IOStream, value: u16) -> b8 ---
-	WriteS16BE :: proc(dst: ^IOStream, value: i16) -> b8 ---
-	WriteU32LE :: proc(dst: ^IOStream, value: u32) -> b8 ---
-	WriteS32LE :: proc(dst: ^IOStream, value: i32) -> b8 ---
-	WriteU32BE :: proc(dst: ^IOStream, value: u32) -> b8 ---
-	WriteS32BE :: proc(dst: ^IOStream, value: i32) -> b8 ---
-	WriteU64LE :: proc(dst: ^IOStream, value: u64) -> b8 ---
-	WriteS64LE :: proc(dst: ^IOStream, value: i64) -> b8 ---
-	WriteU64BE :: proc(dst: ^IOStream, value: u64) -> b8 ---
-	WriteS64BE :: proc(dst: ^IOStream, value: i64) -> b8 ---
+	ReadU8 :: proc(src: IOStream, value: ^u8) -> b8 ---
+	ReadS8 :: proc(src: IOStream, value: ^i8) -> b8 ---
+	ReadU16LE :: proc(src: IOStream, value: ^u16) -> b8 ---
+	ReadS16LE :: proc(src: IOStream, value: ^i16) -> b8 ---
+	ReadU16BE :: proc(src: IOStream, value: ^u16) -> b8 ---
+	ReadS16BE :: proc(src: IOStream, value: ^i16) -> b8 ---
+	ReadU32LE :: proc(src: IOStream, value: ^u32) -> b8 ---
+	ReadS32LE :: proc(src: IOStream, value: ^i32) -> b8 ---
+	ReadU32BE :: proc(src: IOStream, value: ^u32) -> b8 ---
+	ReadS32BE :: proc(src: IOStream, value: ^i32) -> b8 ---
+	ReadU64LE :: proc(src: IOStream, value: ^u64) -> b8 ---
+	ReadS64LE :: proc(src: IOStream, value: ^i64) -> b8 ---
+	ReadU64BE :: proc(src: IOStream, value: ^u64) -> b8 ---
+	ReadS64BE :: proc(src: IOStream, value: ^i64) -> b8 ---
+	WriteU8 :: proc(dst: IOStream, value: u8) -> b8 ---
+	WriteS8 :: proc(dst: IOStream, value: i8) -> b8 ---
+	WriteU16LE :: proc(dst: IOStream, value: u16) -> b8 ---
+	WriteS16LE :: proc(dst: IOStream, value: i16) -> b8 ---
+	WriteU16BE :: proc(dst: IOStream, value: u16) -> b8 ---
+	WriteS16BE :: proc(dst: IOStream, value: i16) -> b8 ---
+	WriteU32LE :: proc(dst: IOStream, value: u32) -> b8 ---
+	WriteS32LE :: proc(dst: IOStream, value: i32) -> b8 ---
+	WriteU32BE :: proc(dst: IOStream, value: u32) -> b8 ---
+	WriteS32BE :: proc(dst: IOStream, value: i32) -> b8 ---
+	WriteU64LE :: proc(dst: IOStream, value: u64) -> b8 ---
+	WriteS64LE :: proc(dst: IOStream, value: i64) -> b8 ---
+	WriteU64BE :: proc(dst: IOStream, value: u64) -> b8 ---
+	WriteS64BE :: proc(dst: IOStream, value: i64) -> b8 ---
 	GetNumAudioDrivers :: proc() -> i32 ---
 	GetAudioDriver :: proc(index: i32) -> cstring ---
 	GetCurrentAudioDriver :: proc() -> cstring ---
@@ -2757,38 +2756,38 @@ foreign sdl3_runic {
 	SetAudioDeviceGain :: proc(devid: AudioDeviceID, gain: f32) -> b8 ---
 	CloseAudioDevice :: proc(devid: AudioDeviceID) ---
 	BindAudioStreams :: proc(devid: AudioDeviceID, streams: ^[^]AudioStream, num_streams: i32) -> b8 ---
-	BindAudioStream :: proc(devid: AudioDeviceID, stream: ^AudioStream) -> b8 ---
+	BindAudioStream :: proc(devid: AudioDeviceID, stream: AudioStream) -> b8 ---
 	UnbindAudioStreams :: proc(streams: ^[^]AudioStream, num_streams: i32) ---
-	UnbindAudioStream :: proc(stream: ^AudioStream) ---
-	GetAudioStreamDevice :: proc(stream: ^AudioStream) -> AudioDeviceID ---
-	CreateAudioStream :: proc(src_spec: ^AudioSpec, dst_spec: ^AudioSpec) -> ^AudioStream ---
-	GetAudioStreamProperties :: proc(stream: ^AudioStream) -> PropertiesID ---
-	GetAudioStreamFormat :: proc(stream: ^AudioStream, src_spec: ^AudioSpec, dst_spec: ^AudioSpec) -> b8 ---
-	SetAudioStreamFormat :: proc(stream: ^AudioStream, src_spec: ^AudioSpec, dst_spec: ^AudioSpec) -> b8 ---
-	GetAudioStreamFrequencyRatio :: proc(stream: ^AudioStream) -> f32 ---
-	SetAudioStreamFrequencyRatio :: proc(stream: ^AudioStream, ratio: f32) -> b8 ---
-	GetAudioStreamGain :: proc(stream: ^AudioStream) -> f32 ---
-	SetAudioStreamGain :: proc(stream: ^AudioStream, gain: f32) -> b8 ---
-	GetAudioStreamInputChannelMap :: proc(stream: ^AudioStream, count: ^i32) -> ^i32 ---
-	GetAudioStreamOutputChannelMap :: proc(stream: ^AudioStream, count: ^i32) -> ^i32 ---
-	SetAudioStreamInputChannelMap :: proc(stream: ^AudioStream, chmap: ^i32, count: i32) -> b8 ---
-	SetAudioStreamOutputChannelMap :: proc(stream: ^AudioStream, chmap: ^i32, count: i32) -> b8 ---
-	PutAudioStreamData :: proc(stream: ^AudioStream, buf: rawptr, len: i32) -> b8 ---
-	GetAudioStreamData :: proc(stream: ^AudioStream, buf: rawptr, len: i32) -> i32 ---
-	GetAudioStreamAvailable :: proc(stream: ^AudioStream) -> i32 ---
-	GetAudioStreamQueued :: proc(stream: ^AudioStream) -> i32 ---
-	FlushAudioStream :: proc(stream: ^AudioStream) -> b8 ---
-	ClearAudioStream :: proc(stream: ^AudioStream) -> b8 ---
-	PauseAudioStreamDevice :: proc(stream: ^AudioStream) -> b8 ---
-	ResumeAudioStreamDevice :: proc(stream: ^AudioStream) -> b8 ---
-	LockAudioStream :: proc(stream: ^AudioStream) -> b8 ---
-	UnlockAudioStream :: proc(stream: ^AudioStream) -> b8 ---
-	SetAudioStreamGetCallback :: proc(stream: ^AudioStream, callback: AudioStreamCallback, userdata: rawptr) -> b8 ---
-	SetAudioStreamPutCallback :: proc(stream: ^AudioStream, callback: AudioStreamCallback, userdata: rawptr) -> b8 ---
-	DestroyAudioStream :: proc(stream: ^AudioStream) ---
-	OpenAudioDeviceStream :: proc(devid: AudioDeviceID, spec: ^AudioSpec, callback: AudioStreamCallback, userdata: rawptr) -> ^AudioStream ---
+	UnbindAudioStream :: proc(stream: AudioStream) ---
+	GetAudioStreamDevice :: proc(stream: AudioStream) -> AudioDeviceID ---
+	CreateAudioStream :: proc(src_spec: ^AudioSpec, dst_spec: ^AudioSpec) -> AudioStream ---
+	GetAudioStreamProperties :: proc(stream: AudioStream) -> PropertiesID ---
+	GetAudioStreamFormat :: proc(stream: AudioStream, src_spec: ^AudioSpec, dst_spec: ^AudioSpec) -> b8 ---
+	SetAudioStreamFormat :: proc(stream: AudioStream, src_spec: ^AudioSpec, dst_spec: ^AudioSpec) -> b8 ---
+	GetAudioStreamFrequencyRatio :: proc(stream: AudioStream) -> f32 ---
+	SetAudioStreamFrequencyRatio :: proc(stream: AudioStream, ratio: f32) -> b8 ---
+	GetAudioStreamGain :: proc(stream: AudioStream) -> f32 ---
+	SetAudioStreamGain :: proc(stream: AudioStream, gain: f32) -> b8 ---
+	GetAudioStreamInputChannelMap :: proc(stream: AudioStream, count: ^i32) -> ^i32 ---
+	GetAudioStreamOutputChannelMap :: proc(stream: AudioStream, count: ^i32) -> ^i32 ---
+	SetAudioStreamInputChannelMap :: proc(stream: AudioStream, chmap: ^i32, count: i32) -> b8 ---
+	SetAudioStreamOutputChannelMap :: proc(stream: AudioStream, chmap: ^i32, count: i32) -> b8 ---
+	PutAudioStreamData :: proc(stream: AudioStream, buf: rawptr, len: i32) -> b8 ---
+	GetAudioStreamData :: proc(stream: AudioStream, buf: rawptr, len: i32) -> i32 ---
+	GetAudioStreamAvailable :: proc(stream: AudioStream) -> i32 ---
+	GetAudioStreamQueued :: proc(stream: AudioStream) -> i32 ---
+	FlushAudioStream :: proc(stream: AudioStream) -> b8 ---
+	ClearAudioStream :: proc(stream: AudioStream) -> b8 ---
+	PauseAudioStreamDevice :: proc(stream: AudioStream) -> b8 ---
+	ResumeAudioStreamDevice :: proc(stream: AudioStream) -> b8 ---
+	LockAudioStream :: proc(stream: AudioStream) -> b8 ---
+	UnlockAudioStream :: proc(stream: AudioStream) -> b8 ---
+	SetAudioStreamGetCallback :: proc(stream: AudioStream, callback: AudioStreamCallback, userdata: rawptr) -> b8 ---
+	SetAudioStreamPutCallback :: proc(stream: AudioStream, callback: AudioStreamCallback, userdata: rawptr) -> b8 ---
+	DestroyAudioStream :: proc(stream: AudioStream) ---
+	OpenAudioDeviceStream :: proc(devid: AudioDeviceID, spec: ^AudioSpec, callback: AudioStreamCallback, userdata: rawptr) -> AudioStream ---
 	SetAudioPostmixCallback :: proc(devid: AudioDeviceID, callback: AudioPostmixCallback, userdata: rawptr) -> b8 ---
-	LoadWAV_IO :: proc(src: ^IOStream, closeio: b8, spec: ^AudioSpec, audio_buf: ^^u8, audio_len: ^u32) -> b8 ---
+	LoadWAV_IO :: proc(src: IOStream, closeio: b8, spec: ^AudioSpec, audio_buf: ^^u8, audio_len: ^u32) -> b8 ---
 	LoadWAV :: proc(path: cstring, spec: ^AudioSpec, audio_buf: ^^u8, audio_len: ^u32) -> b8 ---
 	MixAudio :: proc(dst: ^u8, src: ^u8, format: AudioFormat, len: u32, volume: f32) -> b8 ---
 	ConvertAudioSamples :: proc(src_spec: ^AudioSpec, src_data: ^u8, src_len: i32, dst_spec: ^AudioSpec, dst_data: ^^u8, dst_len: ^i32) -> b8 ---
@@ -2831,9 +2830,9 @@ foreign sdl3_runic {
 	RemoveSurfaceAlternateImages :: proc(surface: ^Surface) ---
 	LockSurface :: proc(surface: ^Surface) -> b8 ---
 	UnlockSurface :: proc(surface: ^Surface) ---
-	LoadBMP_IO :: proc(src: ^IOStream, closeio: b8) -> ^Surface ---
+	LoadBMP_IO :: proc(src: IOStream, closeio: b8) -> ^Surface ---
 	LoadBMP :: proc(file: cstring) -> ^Surface ---
-	SaveBMP_IO :: proc(surface: ^Surface, dst: ^IOStream, closeio: b8) -> b8 ---
+	SaveBMP_IO :: proc(surface: ^Surface, dst: IOStream, closeio: b8) -> b8 ---
 	SaveBMP :: proc(surface: ^Surface, file: cstring) -> b8 ---
 	SetSurfaceRLE :: proc(surface: ^Surface, enabled: b8) -> b8 ---
 	SurfaceHasRLE :: proc(surface: ^Surface) -> b8 ---
@@ -2880,14 +2879,14 @@ foreign sdl3_runic {
 	GetCameraSupportedFormats :: proc(devid: CameraID, count: ^i32) -> ^^CameraSpec ---
 	GetCameraName :: proc(instance_id: CameraID) -> cstring ---
 	GetCameraPosition :: proc(instance_id: CameraID) -> CameraPosition ---
-	OpenCamera :: proc(instance_id: CameraID, spec: ^CameraSpec) -> ^Camera ---
-	GetCameraPermissionState :: proc(camera: ^Camera) -> i32 ---
-	GetCameraID :: proc(camera: ^Camera) -> CameraID ---
-	GetCameraProperties :: proc(camera: ^Camera) -> PropertiesID ---
-	GetCameraFormat :: proc(camera: ^Camera, spec: ^CameraSpec) -> b8 ---
-	AcquireCameraFrame :: proc(camera: ^Camera, timestampNS: ^u64) -> ^Surface ---
-	ReleaseCameraFrame :: proc(camera: ^Camera, frame: ^Surface) ---
-	CloseCamera :: proc(camera: ^Camera) ---
+	OpenCamera :: proc(instance_id: CameraID, spec: ^CameraSpec) -> Camera ---
+	GetCameraPermissionState :: proc(camera: Camera) -> i32 ---
+	GetCameraID :: proc(camera: Camera) -> CameraID ---
+	GetCameraProperties :: proc(camera: Camera) -> PropertiesID ---
+	GetCameraFormat :: proc(camera: Camera, spec: ^CameraSpec) -> b8 ---
+	AcquireCameraFrame :: proc(camera: Camera, timestampNS: ^u64) -> ^Surface ---
+	ReleaseCameraFrame :: proc(camera: Camera, frame: ^Surface) ---
+	CloseCamera :: proc(camera: Camera) ---
 	SetClipboardText :: proc(text: cstring) -> b8 ---
 	GetClipboardText :: proc() -> cstring ---
 	HasClipboardText :: proc() -> b8 ---
@@ -3036,15 +3035,15 @@ foreign sdl3_runic {
 	GetSensorNameForID :: proc(instance_id: SensorID) -> cstring ---
 	GetSensorTypeForID :: proc(instance_id: SensorID) -> SensorType ---
 	GetSensorNonPortableTypeForID :: proc(instance_id: SensorID) -> i32 ---
-	OpenSensor :: proc(instance_id: SensorID) -> ^Sensor ---
-	GetSensorFromID :: proc(instance_id: SensorID) -> ^Sensor ---
-	GetSensorProperties :: proc(sensor: ^Sensor) -> PropertiesID ---
-	GetSensorName :: proc(sensor: ^Sensor) -> cstring ---
-	GetSensorType :: proc(sensor: ^Sensor) -> SensorType ---
-	GetSensorNonPortableType :: proc(sensor: ^Sensor) -> i32 ---
-	GetSensorID :: proc(sensor: ^Sensor) -> SensorID ---
-	GetSensorData :: proc(sensor: ^Sensor, data: ^f32, num_values: i32) -> b8 ---
-	CloseSensor :: proc(sensor: ^Sensor) ---
+	OpenSensor :: proc(instance_id: SensorID) -> Sensor ---
+	GetSensorFromID :: proc(instance_id: SensorID) -> Sensor ---
+	GetSensorProperties :: proc(sensor: Sensor) -> PropertiesID ---
+	GetSensorName :: proc(sensor: Sensor) -> cstring ---
+	GetSensorType :: proc(sensor: Sensor) -> SensorType ---
+	GetSensorNonPortableType :: proc(sensor: Sensor) -> i32 ---
+	GetSensorID :: proc(sensor: Sensor) -> SensorID ---
+	GetSensorData :: proc(sensor: Sensor, data: ^f32, num_values: i32) -> b8 ---
+	CloseSensor :: proc(sensor: Sensor) ---
 	UpdateSensors :: proc() ---
 	LockJoysticks :: proc() ---
 	UnlockJoysticks :: proc() ---
@@ -3058,59 +3057,59 @@ foreign sdl3_runic {
 	GetJoystickProductForID :: proc(instance_id: JoystickID) -> u16 ---
 	GetJoystickProductVersionForID :: proc(instance_id: JoystickID) -> u16 ---
 	GetJoystickTypeForID :: proc(instance_id: JoystickID) -> JoystickType ---
-	OpenJoystick :: proc(instance_id: JoystickID) -> ^Joystick ---
-	GetJoystickFromID :: proc(instance_id: JoystickID) -> ^Joystick ---
-	GetJoystickFromPlayerIndex :: proc(player_index: i32) -> ^Joystick ---
+	OpenJoystick :: proc(instance_id: JoystickID) -> Joystick ---
+	GetJoystickFromID :: proc(instance_id: JoystickID) -> Joystick ---
+	GetJoystickFromPlayerIndex :: proc(player_index: i32) -> Joystick ---
 	AttachVirtualJoystick :: proc(desc: ^VirtualJoystickDesc) -> JoystickID ---
 	DetachVirtualJoystick :: proc(instance_id: JoystickID) -> b8 ---
 	IsJoystickVirtual :: proc(instance_id: JoystickID) -> b8 ---
-	SetJoystickVirtualAxis :: proc(joystick: ^Joystick, axis: i32, value: i16) -> b8 ---
-	SetJoystickVirtualBall :: proc(joystick: ^Joystick, ball: i32, xrel: i16, yrel: i16) -> b8 ---
-	SetJoystickVirtualButton :: proc(joystick: ^Joystick, button: i32, down: b8) -> b8 ---
-	SetJoystickVirtualHat :: proc(joystick: ^Joystick, hat: i32, value: u8) -> b8 ---
-	SetJoystickVirtualTouchpad :: proc(joystick: ^Joystick, touchpad: i32, finger: i32, down: b8, x: f32, y: f32, pressure: f32) -> b8 ---
-	SendJoystickVirtualSensorData :: proc(joystick: ^Joystick, type: SensorType, sensor_timestamp: u64, data: ^f32, num_values: i32) -> b8 ---
-	GetJoystickProperties :: proc(joystick: ^Joystick) -> PropertiesID ---
-	GetJoystickName :: proc(joystick: ^Joystick) -> cstring ---
-	GetJoystickPath :: proc(joystick: ^Joystick) -> cstring ---
-	GetJoystickPlayerIndex :: proc(joystick: ^Joystick) -> i32 ---
-	SetJoystickPlayerIndex :: proc(joystick: ^Joystick, player_index: i32) -> b8 ---
-	GetJoystickGUID :: proc(joystick: ^Joystick) -> GUID ---
-	GetJoystickVendor :: proc(joystick: ^Joystick) -> u16 ---
-	GetJoystickProduct :: proc(joystick: ^Joystick) -> u16 ---
-	GetJoystickProductVersion :: proc(joystick: ^Joystick) -> u16 ---
-	GetJoystickFirmwareVersion :: proc(joystick: ^Joystick) -> u16 ---
-	GetJoystickSerial :: proc(joystick: ^Joystick) -> cstring ---
-	GetJoystickType :: proc(joystick: ^Joystick) -> JoystickType ---
+	SetJoystickVirtualAxis :: proc(joystick: Joystick, axis: i32, value: i16) -> b8 ---
+	SetJoystickVirtualBall :: proc(joystick: Joystick, ball: i32, xrel: i16, yrel: i16) -> b8 ---
+	SetJoystickVirtualButton :: proc(joystick: Joystick, button: i32, down: b8) -> b8 ---
+	SetJoystickVirtualHat :: proc(joystick: Joystick, hat: i32, value: u8) -> b8 ---
+	SetJoystickVirtualTouchpad :: proc(joystick: Joystick, touchpad: i32, finger: i32, down: b8, x: f32, y: f32, pressure: f32) -> b8 ---
+	SendJoystickVirtualSensorData :: proc(joystick: Joystick, type: SensorType, sensor_timestamp: u64, data: ^f32, num_values: i32) -> b8 ---
+	GetJoystickProperties :: proc(joystick: Joystick) -> PropertiesID ---
+	GetJoystickName :: proc(joystick: Joystick) -> cstring ---
+	GetJoystickPath :: proc(joystick: Joystick) -> cstring ---
+	GetJoystickPlayerIndex :: proc(joystick: Joystick) -> i32 ---
+	SetJoystickPlayerIndex :: proc(joystick: Joystick, player_index: i32) -> b8 ---
+	GetJoystickGUID :: proc(joystick: Joystick) -> GUID ---
+	GetJoystickVendor :: proc(joystick: Joystick) -> u16 ---
+	GetJoystickProduct :: proc(joystick: Joystick) -> u16 ---
+	GetJoystickProductVersion :: proc(joystick: Joystick) -> u16 ---
+	GetJoystickFirmwareVersion :: proc(joystick: Joystick) -> u16 ---
+	GetJoystickSerial :: proc(joystick: Joystick) -> cstring ---
+	GetJoystickType :: proc(joystick: Joystick) -> JoystickType ---
 	GetJoystickGUIDInfo :: proc(guid: GUID, vendor: ^u16, product: ^u16, version: ^u16, crc16: ^u16) ---
-	JoystickConnected :: proc(joystick: ^Joystick) -> b8 ---
-	GetJoystickID :: proc(joystick: ^Joystick) -> JoystickID ---
-	GetNumJoystickAxes :: proc(joystick: ^Joystick) -> i32 ---
-	GetNumJoystickBalls :: proc(joystick: ^Joystick) -> i32 ---
-	GetNumJoystickHats :: proc(joystick: ^Joystick) -> i32 ---
-	GetNumJoystickButtons :: proc(joystick: ^Joystick) -> i32 ---
+	JoystickConnected :: proc(joystick: Joystick) -> b8 ---
+	GetJoystickID :: proc(joystick: Joystick) -> JoystickID ---
+	GetNumJoystickAxes :: proc(joystick: Joystick) -> i32 ---
+	GetNumJoystickBalls :: proc(joystick: Joystick) -> i32 ---
+	GetNumJoystickHats :: proc(joystick: Joystick) -> i32 ---
+	GetNumJoystickButtons :: proc(joystick: Joystick) -> i32 ---
 	SetJoystickEventsEnabled :: proc(enabled: b8) ---
 	JoystickEventsEnabled :: proc() -> b8 ---
 	UpdateJoysticks :: proc() ---
-	GetJoystickAxis :: proc(joystick: ^Joystick, axis: i32) -> i16 ---
-	GetJoystickAxisInitialState :: proc(joystick: ^Joystick, axis: i32, state: ^i16) -> b8 ---
-	GetJoystickBall :: proc(joystick: ^Joystick, ball: i32, dx: ^i32, dy: ^i32) -> b8 ---
-	GetJoystickHat :: proc(joystick: ^Joystick, hat: i32) -> u8 ---
-	GetJoystickButton :: proc(joystick: ^Joystick, button: i32) -> b8 ---
-	RumbleJoystick :: proc(joystick: ^Joystick, low_frequency_rumble: u16, high_frequency_rumble: u16, duration_ms: u32) -> b8 ---
-	RumbleJoystickTriggers :: proc(joystick: ^Joystick, left_rumble: u16, right_rumble: u16, duration_ms: u32) -> b8 ---
-	SetJoystickLED :: proc(joystick: ^Joystick, red: u8, green: u8, blue: u8) -> b8 ---
-	SendJoystickEffect :: proc(joystick: ^Joystick, data: rawptr, size: i32) -> b8 ---
-	CloseJoystick :: proc(joystick: ^Joystick) ---
-	GetJoystickConnectionState :: proc(joystick: ^Joystick) -> JoystickConnectionState ---
-	GetJoystickPowerInfo :: proc(joystick: ^Joystick, percent: ^i32) -> PowerState ---
+	GetJoystickAxis :: proc(joystick: Joystick, axis: i32) -> i16 ---
+	GetJoystickAxisInitialState :: proc(joystick: Joystick, axis: i32, state: ^i16) -> b8 ---
+	GetJoystickBall :: proc(joystick: Joystick, ball: i32, dx: ^i32, dy: ^i32) -> b8 ---
+	GetJoystickHat :: proc(joystick: Joystick, hat: i32) -> u8 ---
+	GetJoystickButton :: proc(joystick: Joystick, button: i32) -> b8 ---
+	RumbleJoystick :: proc(joystick: Joystick, low_frequency_rumble: u16, high_frequency_rumble: u16, duration_ms: u32) -> b8 ---
+	RumbleJoystickTriggers :: proc(joystick: Joystick, left_rumble: u16, right_rumble: u16, duration_ms: u32) -> b8 ---
+	SetJoystickLED :: proc(joystick: Joystick, red: u8, green: u8, blue: u8) -> b8 ---
+	SendJoystickEffect :: proc(joystick: Joystick, data: rawptr, size: i32) -> b8 ---
+	CloseJoystick :: proc(joystick: Joystick) ---
+	GetJoystickConnectionState :: proc(joystick: Joystick) -> JoystickConnectionState ---
+	GetJoystickPowerInfo :: proc(joystick: Joystick, percent: ^i32) -> PowerState ---
 	AddGamepadMapping :: proc(mapping: cstring) -> i32 ---
-	AddGamepadMappingsFromIO :: proc(src: ^IOStream, closeio: b8) -> i32 ---
+	AddGamepadMappingsFromIO :: proc(src: IOStream, closeio: b8) -> i32 ---
 	AddGamepadMappingsFromFile :: proc(file: cstring) -> i32 ---
 	ReloadGamepadMappings :: proc() -> b8 ---
 	GetGamepadMappings :: proc(count: ^i32) -> ^cstring ---
 	GetGamepadMappingForGUID :: proc(guid: GUID) -> cstring ---
-	GetGamepadMapping :: proc(gamepad: ^Gamepad) -> cstring ---
+	GetGamepadMapping :: proc(gamepad: Gamepad) -> cstring ---
 	SetGamepadMapping :: proc(instance_id: JoystickID, mapping: cstring) -> b8 ---
 	HasGamepad :: proc() -> b8 ---
 	GetGamepads :: proc(count: ^i32) -> ^JoystickID ---
@@ -3125,58 +3124,58 @@ foreign sdl3_runic {
 	GetGamepadTypeForID :: proc(instance_id: JoystickID) -> GamepadType ---
 	GetRealGamepadTypeForID :: proc(instance_id: JoystickID) -> GamepadType ---
 	GetGamepadMappingForID :: proc(instance_id: JoystickID) -> cstring ---
-	OpenGamepad :: proc(instance_id: JoystickID) -> ^Gamepad ---
-	GetGamepadFromID :: proc(instance_id: JoystickID) -> ^Gamepad ---
-	GetGamepadFromPlayerIndex :: proc(player_index: i32) -> ^Gamepad ---
-	GetGamepadProperties :: proc(gamepad: ^Gamepad) -> PropertiesID ---
-	GetGamepadID :: proc(gamepad: ^Gamepad) -> JoystickID ---
-	GetGamepadName :: proc(gamepad: ^Gamepad) -> cstring ---
-	GetGamepadPath :: proc(gamepad: ^Gamepad) -> cstring ---
-	GetGamepadType :: proc(gamepad: ^Gamepad) -> GamepadType ---
-	GetRealGamepadType :: proc(gamepad: ^Gamepad) -> GamepadType ---
-	GetGamepadPlayerIndex :: proc(gamepad: ^Gamepad) -> i32 ---
-	SetGamepadPlayerIndex :: proc(gamepad: ^Gamepad, player_index: i32) -> b8 ---
-	GetGamepadVendor :: proc(gamepad: ^Gamepad) -> u16 ---
-	GetGamepadProduct :: proc(gamepad: ^Gamepad) -> u16 ---
-	GetGamepadProductVersion :: proc(gamepad: ^Gamepad) -> u16 ---
-	GetGamepadFirmwareVersion :: proc(gamepad: ^Gamepad) -> u16 ---
-	GetGamepadSerial :: proc(gamepad: ^Gamepad) -> cstring ---
-	GetGamepadSteamHandle :: proc(gamepad: ^Gamepad) -> u64 ---
-	GetGamepadConnectionState :: proc(gamepad: ^Gamepad) -> JoystickConnectionState ---
-	GetGamepadPowerInfo :: proc(gamepad: ^Gamepad, percent: ^i32) -> PowerState ---
-	GamepadConnected :: proc(gamepad: ^Gamepad) -> b8 ---
-	GetGamepadJoystick :: proc(gamepad: ^Gamepad) -> ^Joystick ---
+	OpenGamepad :: proc(instance_id: JoystickID) -> Gamepad ---
+	GetGamepadFromID :: proc(instance_id: JoystickID) -> Gamepad ---
+	GetGamepadFromPlayerIndex :: proc(player_index: i32) -> Gamepad ---
+	GetGamepadProperties :: proc(gamepad: Gamepad) -> PropertiesID ---
+	GetGamepadID :: proc(gamepad: Gamepad) -> JoystickID ---
+	GetGamepadName :: proc(gamepad: Gamepad) -> cstring ---
+	GetGamepadPath :: proc(gamepad: Gamepad) -> cstring ---
+	GetGamepadType :: proc(gamepad: Gamepad) -> GamepadType ---
+	GetRealGamepadType :: proc(gamepad: Gamepad) -> GamepadType ---
+	GetGamepadPlayerIndex :: proc(gamepad: Gamepad) -> i32 ---
+	SetGamepadPlayerIndex :: proc(gamepad: Gamepad, player_index: i32) -> b8 ---
+	GetGamepadVendor :: proc(gamepad: Gamepad) -> u16 ---
+	GetGamepadProduct :: proc(gamepad: Gamepad) -> u16 ---
+	GetGamepadProductVersion :: proc(gamepad: Gamepad) -> u16 ---
+	GetGamepadFirmwareVersion :: proc(gamepad: Gamepad) -> u16 ---
+	GetGamepadSerial :: proc(gamepad: Gamepad) -> cstring ---
+	GetGamepadSteamHandle :: proc(gamepad: Gamepad) -> u64 ---
+	GetGamepadConnectionState :: proc(gamepad: Gamepad) -> JoystickConnectionState ---
+	GetGamepadPowerInfo :: proc(gamepad: Gamepad, percent: ^i32) -> PowerState ---
+	GamepadConnected :: proc(gamepad: Gamepad) -> b8 ---
+	GetGamepadJoystick :: proc(gamepad: Gamepad) -> Joystick ---
 	SetGamepadEventsEnabled :: proc(enabled: b8) ---
 	GamepadEventsEnabled :: proc() -> b8 ---
-	GetGamepadBindings :: proc(gamepad: ^Gamepad, count: ^i32) -> ^^GamepadBinding ---
+	GetGamepadBindings :: proc(gamepad: Gamepad, count: ^i32) -> ^^GamepadBinding ---
 	UpdateGamepads :: proc() ---
 	GetGamepadTypeFromString :: proc(str: cstring) -> GamepadType ---
 	GetGamepadStringForType :: proc(type: GamepadType) -> cstring ---
 	GetGamepadAxisFromString :: proc(str: cstring) -> GamepadAxis ---
 	GetGamepadStringForAxis :: proc(axis: GamepadAxis) -> cstring ---
-	GamepadHasAxis :: proc(gamepad: ^Gamepad, axis: GamepadAxis) -> b8 ---
-	GetGamepadAxis :: proc(gamepad: ^Gamepad, axis: GamepadAxis) -> i16 ---
+	GamepadHasAxis :: proc(gamepad: Gamepad, axis: GamepadAxis) -> b8 ---
+	GetGamepadAxis :: proc(gamepad: Gamepad, axis: GamepadAxis) -> i16 ---
 	GetGamepadButtonFromString :: proc(str: cstring) -> GamepadButton ---
 	GetGamepadStringForButton :: proc(button: GamepadButton) -> cstring ---
-	GamepadHasButton :: proc(gamepad: ^Gamepad, button: GamepadButton) -> b8 ---
-	GetGamepadButton :: proc(gamepad: ^Gamepad, button: GamepadButton) -> b8 ---
+	GamepadHasButton :: proc(gamepad: Gamepad, button: GamepadButton) -> b8 ---
+	GetGamepadButton :: proc(gamepad: Gamepad, button: GamepadButton) -> b8 ---
 	GetGamepadButtonLabelForType :: proc(type: GamepadType, button: GamepadButton) -> GamepadButtonLabel ---
-	GetGamepadButtonLabel :: proc(gamepad: ^Gamepad, button: GamepadButton) -> GamepadButtonLabel ---
-	GetNumGamepadTouchpads :: proc(gamepad: ^Gamepad) -> i32 ---
-	GetNumGamepadTouchpadFingers :: proc(gamepad: ^Gamepad, touchpad: i32) -> i32 ---
-	GetGamepadTouchpadFinger :: proc(gamepad: ^Gamepad, touchpad: i32, finger: i32, down: ^b8, x: ^f32, y: ^f32, pressure: ^f32) -> b8 ---
-	GamepadHasSensor :: proc(gamepad: ^Gamepad, type: SensorType) -> b8 ---
-	SetGamepadSensorEnabled :: proc(gamepad: ^Gamepad, type: SensorType, enabled: b8) -> b8 ---
-	GamepadSensorEnabled :: proc(gamepad: ^Gamepad, type: SensorType) -> b8 ---
-	GetGamepadSensorDataRate :: proc(gamepad: ^Gamepad, type: SensorType) -> f32 ---
-	GetGamepadSensorData :: proc(gamepad: ^Gamepad, type: SensorType, data: ^f32, num_values: i32) -> b8 ---
-	RumbleGamepad :: proc(gamepad: ^Gamepad, low_frequency_rumble: u16, high_frequency_rumble: u16, duration_ms: u32) -> b8 ---
-	RumbleGamepadTriggers :: proc(gamepad: ^Gamepad, left_rumble: u16, right_rumble: u16, duration_ms: u32) -> b8 ---
-	SetGamepadLED :: proc(gamepad: ^Gamepad, red: u8, green: u8, blue: u8) -> b8 ---
-	SendGamepadEffect :: proc(gamepad: ^Gamepad, data: rawptr, size: i32) -> b8 ---
-	CloseGamepad :: proc(gamepad: ^Gamepad) ---
-	GetGamepadAppleSFSymbolsNameForButton :: proc(gamepad: ^Gamepad, button: GamepadButton) -> cstring ---
-	GetGamepadAppleSFSymbolsNameForAxis :: proc(gamepad: ^Gamepad, axis: GamepadAxis) -> cstring ---
+	GetGamepadButtonLabel :: proc(gamepad: Gamepad, button: GamepadButton) -> GamepadButtonLabel ---
+	GetNumGamepadTouchpads :: proc(gamepad: Gamepad) -> i32 ---
+	GetNumGamepadTouchpadFingers :: proc(gamepad: Gamepad, touchpad: i32) -> i32 ---
+	GetGamepadTouchpadFinger :: proc(gamepad: Gamepad, touchpad: i32, finger: i32, down: ^b8, x: ^f32, y: ^f32, pressure: ^f32) -> b8 ---
+	GamepadHasSensor :: proc(gamepad: Gamepad, type: SensorType) -> b8 ---
+	SetGamepadSensorEnabled :: proc(gamepad: Gamepad, type: SensorType, enabled: b8) -> b8 ---
+	GamepadSensorEnabled :: proc(gamepad: Gamepad, type: SensorType) -> b8 ---
+	GetGamepadSensorDataRate :: proc(gamepad: Gamepad, type: SensorType) -> f32 ---
+	GetGamepadSensorData :: proc(gamepad: Gamepad, type: SensorType, data: ^f32, num_values: i32) -> b8 ---
+	RumbleGamepad :: proc(gamepad: Gamepad, low_frequency_rumble: u16, high_frequency_rumble: u16, duration_ms: u32) -> b8 ---
+	RumbleGamepadTriggers :: proc(gamepad: Gamepad, left_rumble: u16, right_rumble: u16, duration_ms: u32) -> b8 ---
+	SetGamepadLED :: proc(gamepad: Gamepad, red: u8, green: u8, blue: u8) -> b8 ---
+	SendGamepadEffect :: proc(gamepad: Gamepad, data: rawptr, size: i32) -> b8 ---
+	CloseGamepad :: proc(gamepad: Gamepad) ---
+	GetGamepadAppleSFSymbolsNameForButton :: proc(gamepad: Gamepad, button: GamepadButton) -> cstring ---
+	GetGamepadAppleSFSymbolsNameForAxis :: proc(gamepad: Gamepad, axis: GamepadAxis) -> cstring ---
 	HasKeyboard :: proc() -> b8 ---
 	GetKeyboards :: proc(count: ^i32) -> ^KeyboardID ---
 	GetKeyboardNameForID :: proc(instance_id: KeyboardID) -> cstring ---
@@ -3213,13 +3212,13 @@ foreign sdl3_runic {
 	SetWindowRelativeMouseMode :: proc(window: Window, enabled: b8) -> b8 ---
 	GetWindowRelativeMouseMode :: proc(window: Window) -> b8 ---
 	CaptureMouse :: proc(enabled: b8) -> b8 ---
-	CreateCursor :: proc(data: ^u8, mask: ^u8, w: i32, h: i32, hot_x: i32, hot_y: i32) -> ^Cursor ---
-	CreateColorCursor :: proc(surface: ^Surface, hot_x: i32, hot_y: i32) -> ^Cursor ---
-	CreateSystemCursor :: proc(id: SystemCursor) -> ^Cursor ---
-	SetCursor :: proc(cursor: ^Cursor) -> b8 ---
-	GetCursor :: proc() -> ^Cursor ---
-	GetDefaultCursor :: proc() -> ^Cursor ---
-	DestroyCursor :: proc(cursor: ^Cursor) ---
+	CreateCursor :: proc(data: ^u8, mask: ^u8, w: i32, h: i32, hot_x: i32, hot_y: i32) -> Cursor ---
+	CreateColorCursor :: proc(surface: ^Surface, hot_x: i32, hot_y: i32) -> Cursor ---
+	CreateSystemCursor :: proc(id: SystemCursor) -> Cursor ---
+	SetCursor :: proc(cursor: Cursor) -> b8 ---
+	GetCursor :: proc() -> Cursor ---
+	GetDefaultCursor :: proc() -> Cursor ---
+	DestroyCursor :: proc(cursor: Cursor) ---
 	ShowCursor :: proc() -> b8 ---
 	HideCursor :: proc() -> b8 ---
 	CursorVisible :: proc() -> b8 ---
@@ -3258,38 +3257,38 @@ foreign sdl3_runic {
 	GlobDirectory :: proc(path: cstring, pattern: cstring, flags: GlobFlags, count: ^i32) -> ^cstring ---
 	GPUSupportsShaderFormats :: proc(format_flags: GPUShaderFormat, name: cstring) -> b8 ---
 	GPUSupportsProperties :: proc(props: PropertiesID) -> b8 ---
-	CreateGPUDevice :: proc(format_flags: GPUShaderFormat, debug_mode: b8, name: cstring) -> ^GPUDevice ---
-	CreateGPUDeviceWithProperties :: proc(props: PropertiesID) -> ^GPUDevice ---
-	DestroyGPUDevice :: proc(device: ^GPUDevice) ---
+	CreateGPUDevice :: proc(format_flags: GPUShaderFormat, debug_mode: b8, name: cstring) -> GPUDevice ---
+	CreateGPUDeviceWithProperties :: proc(props: PropertiesID) -> GPUDevice ---
+	DestroyGPUDevice :: proc(device: GPUDevice) ---
 	GetNumGPUDrivers :: proc() -> i32 ---
 	GetGPUDriver :: proc(index: i32) -> cstring ---
-	GetGPUDeviceDriver :: proc(device: ^GPUDevice) -> cstring ---
-	GetGPUShaderFormats :: proc(device: ^GPUDevice) -> GPUShaderFormat ---
-	CreateGPUComputePipeline :: proc(device: ^GPUDevice, createinfo: ^GPUComputePipelineCreateInfo) -> ^GPUComputePipeline ---
-	CreateGPUGraphicsPipeline :: proc(device: ^GPUDevice, createinfo: ^GPUGraphicsPipelineCreateInfo) -> ^GPUGraphicsPipeline ---
-	CreateGPUSampler :: proc(device: ^GPUDevice, createinfo: ^GPUSamplerCreateInfo) -> ^GPUSampler ---
-	CreateGPUShader :: proc(device: ^GPUDevice, createinfo: ^GPUShaderCreateInfo) -> ^GPUShader ---
-	CreateGPUTexture :: proc(device: ^GPUDevice, createinfo: ^GPUTextureCreateInfo) -> ^GPUTexture ---
-	CreateGPUBuffer :: proc(device: ^GPUDevice, createinfo: ^GPUBufferCreateInfo) -> ^GPUBuffer ---
-	CreateGPUTransferBuffer :: proc(device: ^GPUDevice, createinfo: ^GPUTransferBufferCreateInfo) -> ^GPUTransferBuffer ---
-	SetGPUBufferName :: proc(device: ^GPUDevice, buffer: ^GPUBuffer, text: cstring) ---
-	SetGPUTextureName :: proc(device: ^GPUDevice, texture: ^GPUTexture, text: cstring) ---
-	InsertGPUDebugLabel :: proc(command_buffer: ^GPUCommandBuffer, text: cstring) ---
-	PushGPUDebugGroup :: proc(command_buffer: ^GPUCommandBuffer, name: cstring) ---
-	PopGPUDebugGroup :: proc(command_buffer: ^GPUCommandBuffer) ---
-	ReleaseGPUTexture :: proc(device: ^GPUDevice, texture: ^GPUTexture) ---
-	ReleaseGPUSampler :: proc(device: ^GPUDevice, sampler: ^GPUSampler) ---
-	ReleaseGPUBuffer :: proc(device: ^GPUDevice, buffer: ^GPUBuffer) ---
-	ReleaseGPUTransferBuffer :: proc(device: ^GPUDevice, transfer_buffer: ^GPUTransferBuffer) ---
-	ReleaseGPUComputePipeline :: proc(device: ^GPUDevice, compute_pipeline: ^GPUComputePipeline) ---
-	ReleaseGPUShader :: proc(device: ^GPUDevice, shader: ^GPUShader) ---
-	ReleaseGPUGraphicsPipeline :: proc(device: ^GPUDevice, graphics_pipeline: ^GPUGraphicsPipeline) ---
-	AcquireGPUCommandBuffer :: proc(device: ^GPUDevice) -> ^GPUCommandBuffer ---
-	PushGPUVertexUniformData :: proc(command_buffer: ^GPUCommandBuffer, slot_index: u32, data: rawptr, length: u32) ---
-	PushGPUFragmentUniformData :: proc(command_buffer: ^GPUCommandBuffer, slot_index: u32, data: rawptr, length: u32) ---
-	PushGPUComputeUniformData :: proc(command_buffer: ^GPUCommandBuffer, slot_index: u32, data: rawptr, length: u32) ---
-	BeginGPURenderPass :: proc(command_buffer: ^GPUCommandBuffer, color_target_infos: [^]GPUColorTargetInfo, num_color_targets: u32, depth_stencil_target_info: ^GPUDepthStencilTargetInfo) -> ^GPURenderPass ---
-	BindGPUGraphicsPipeline :: proc(render_pass: [^]GPURenderPass, graphics_pipeline: ^GPUGraphicsPipeline) ---
+	GetGPUDeviceDriver :: proc(device: GPUDevice) -> cstring ---
+	GetGPUShaderFormats :: proc(device: GPUDevice) -> GPUShaderFormat ---
+	CreateGPUComputePipeline :: proc(device: GPUDevice, createinfo: ^GPUComputePipelineCreateInfo) -> GPUComputePipeline ---
+	CreateGPUGraphicsPipeline :: proc(device: GPUDevice, createinfo: ^GPUGraphicsPipelineCreateInfo) -> GPUGraphicsPipeline ---
+	CreateGPUSampler :: proc(device: GPUDevice, createinfo: ^GPUSamplerCreateInfo) -> GPUSampler ---
+	CreateGPUShader :: proc(device: GPUDevice, createinfo: ^GPUShaderCreateInfo) -> GPUShader ---
+	CreateGPUTexture :: proc(device: GPUDevice, createinfo: ^GPUTextureCreateInfo) -> GPUTexture ---
+	CreateGPUBuffer :: proc(device: GPUDevice, createinfo: ^GPUBufferCreateInfo) -> GPUBuffer ---
+	CreateGPUTransferBuffer :: proc(device: GPUDevice, createinfo: ^GPUTransferBufferCreateInfo) -> GPUTransferBuffer ---
+	SetGPUBufferName :: proc(device: GPUDevice, buffer: GPUBuffer, text: cstring) ---
+	SetGPUTextureName :: proc(device: GPUDevice, texture: GPUTexture, text: cstring) ---
+	InsertGPUDebugLabel :: proc(command_buffer: GPUCommandBuffer, text: cstring) ---
+	PushGPUDebugGroup :: proc(command_buffer: GPUCommandBuffer, name: cstring) ---
+	PopGPUDebugGroup :: proc(command_buffer: GPUCommandBuffer) ---
+	ReleaseGPUTexture :: proc(device: GPUDevice, texture: GPUTexture) ---
+	ReleaseGPUSampler :: proc(device: GPUDevice, sampler: GPUSampler) ---
+	ReleaseGPUBuffer :: proc(device: GPUDevice, buffer: GPUBuffer) ---
+	ReleaseGPUTransferBuffer :: proc(device: GPUDevice, transfer_buffer: GPUTransferBuffer) ---
+	ReleaseGPUComputePipeline :: proc(device: GPUDevice, compute_pipeline: GPUComputePipeline) ---
+	ReleaseGPUShader :: proc(device: GPUDevice, shader: GPUShader) ---
+	ReleaseGPUGraphicsPipeline :: proc(device: GPUDevice, graphics_pipeline: GPUGraphicsPipeline) ---
+	AcquireGPUCommandBuffer :: proc(device: GPUDevice) -> GPUCommandBuffer ---
+	PushGPUVertexUniformData :: proc(command_buffer: GPUCommandBuffer, slot_index: u32, data: rawptr, length: u32) ---
+	PushGPUFragmentUniformData :: proc(command_buffer: GPUCommandBuffer, slot_index: u32, data: rawptr, length: u32) ---
+	PushGPUComputeUniformData :: proc(command_buffer: GPUCommandBuffer, slot_index: u32, data: rawptr, length: u32) ---
+	BeginGPURenderPass :: proc(command_buffer: GPUCommandBuffer, color_target_infos: [^]GPUColorTargetInfo, num_color_targets: u32, depth_stencil_target_info: ^GPUDepthStencilTargetInfo) -> GPURenderPass ---
+	BindGPUGraphicsPipeline :: proc(render_pass: [^]GPURenderPass, graphics_pipeline: GPUGraphicsPipeline) ---
 	SetGPUViewport :: proc(render_pass: [^]GPURenderPass, viewport: ^GPUViewport) ---
 	SetGPUScissor :: proc(render_pass: [^]GPURenderPass, scissor: ^Rect) ---
 	SetGPUBlendConstants :: proc(render_pass: [^]GPURenderPass, blend_constants: FColor) ---
@@ -3304,20 +3303,20 @@ foreign sdl3_runic {
 	BindGPUFragmentStorageBuffers :: proc(render_pass: [^]GPURenderPass, first_slot: u32, storage_buffers: ^[^]GPUBuffer, num_bindings: u32) ---
 	DrawGPUIndexedPrimitives :: proc(render_pass: [^]GPURenderPass, num_indices: u32, num_instances: u32, first_index: u32, vertex_offset: i32, first_instance: u32) ---
 	DrawGPUPrimitives :: proc(render_pass: [^]GPURenderPass, num_vertices: u32, num_instances: u32, first_vertex: u32, first_instance: u32) ---
-	DrawGPUPrimitivesIndirect :: proc(render_pass: [^]GPURenderPass, buffer: ^GPUBuffer, offset: u32, draw_count: u32) ---
-	DrawGPUIndexedPrimitivesIndirect :: proc(render_pass: [^]GPURenderPass, buffer: ^GPUBuffer, offset: u32, draw_count: u32) ---
+	DrawGPUPrimitivesIndirect :: proc(render_pass: [^]GPURenderPass, buffer: GPUBuffer, offset: u32, draw_count: u32) ---
+	DrawGPUIndexedPrimitivesIndirect :: proc(render_pass: [^]GPURenderPass, buffer: GPUBuffer, offset: u32, draw_count: u32) ---
 	EndGPURenderPass :: proc(render_pass: [^]GPURenderPass) ---
-	BeginGPUComputePass :: proc(command_buffer: ^GPUCommandBuffer, storage_texture_bindings: [^]GPUStorageTextureReadWriteBinding, num_storage_texture_bindings: u32, storage_buffer_bindings: [^]GPUStorageBufferReadWriteBinding, num_storage_buffer_bindings: u32) -> ^GPUComputePass ---
-	BindGPUComputePipeline :: proc(compute_pass: [^]GPUComputePass, compute_pipeline: ^GPUComputePipeline) ---
+	BeginGPUComputePass :: proc(command_buffer: GPUCommandBuffer, storage_texture_bindings: [^]GPUStorageTextureReadWriteBinding, num_storage_texture_bindings: u32, storage_buffer_bindings: [^]GPUStorageBufferReadWriteBinding, num_storage_buffer_bindings: u32) -> GPUComputePass ---
+	BindGPUComputePipeline :: proc(compute_pass: [^]GPUComputePass, compute_pipeline: GPUComputePipeline) ---
 	BindGPUComputeSamplers :: proc(compute_pass: [^]GPUComputePass, first_slot: u32, texture_sampler_bindings: [^]GPUTextureSamplerBinding, num_bindings: u32) ---
 	BindGPUComputeStorageTextures :: proc(compute_pass: [^]GPUComputePass, first_slot: u32, storage_textures: ^[^]GPUTexture, num_bindings: u32) ---
 	BindGPUComputeStorageBuffers :: proc(compute_pass: [^]GPUComputePass, first_slot: u32, storage_buffers: ^[^]GPUBuffer, num_bindings: u32) ---
 	DispatchGPUCompute :: proc(compute_pass: [^]GPUComputePass, groupcount_x: u32, groupcount_y: u32, groupcount_z: u32) ---
-	DispatchGPUComputeIndirect :: proc(compute_pass: [^]GPUComputePass, buffer: ^GPUBuffer, offset: u32) ---
+	DispatchGPUComputeIndirect :: proc(compute_pass: [^]GPUComputePass, buffer: GPUBuffer, offset: u32) ---
 	EndGPUComputePass :: proc(compute_pass: [^]GPUComputePass) ---
-	MapGPUTransferBuffer :: proc(device: ^GPUDevice, transfer_buffer: ^GPUTransferBuffer, cycle: b8) -> rawptr ---
-	UnmapGPUTransferBuffer :: proc(device: ^GPUDevice, transfer_buffer: ^GPUTransferBuffer) ---
-	BeginGPUCopyPass :: proc(command_buffer: ^GPUCommandBuffer) -> ^GPUCopyPass ---
+	MapGPUTransferBuffer :: proc(device: GPUDevice, transfer_buffer: GPUTransferBuffer, cycle: b8) -> rawptr ---
+	UnmapGPUTransferBuffer :: proc(device: GPUDevice, transfer_buffer: GPUTransferBuffer) ---
+	BeginGPUCopyPass :: proc(command_buffer: GPUCommandBuffer) -> GPUCopyPass ---
 	UploadToGPUTexture :: proc(copy_pass: [^]GPUCopyPass, source: ^GPUTextureTransferInfo, destination: ^GPUTextureRegion, cycle: b8) ---
 	UploadToGPUBuffer :: proc(copy_pass: [^]GPUCopyPass, source: ^GPUTransferBufferLocation, destination: ^GPUBufferRegion, cycle: b8) ---
 	CopyGPUTextureToTexture :: proc(copy_pass: [^]GPUCopyPass, source: ^GPUTextureLocation, destination: ^GPUTextureLocation, w: u32, h: u32, d: u32, cycle: b8) ---
@@ -3325,78 +3324,78 @@ foreign sdl3_runic {
 	DownloadFromGPUTexture :: proc(copy_pass: [^]GPUCopyPass, source: ^GPUTextureRegion, destination: ^GPUTextureTransferInfo) ---
 	DownloadFromGPUBuffer :: proc(copy_pass: [^]GPUCopyPass, source: ^GPUBufferRegion, destination: ^GPUTransferBufferLocation) ---
 	EndGPUCopyPass :: proc(copy_pass: [^]GPUCopyPass) ---
-	GenerateMipmapsForGPUTexture :: proc(command_buffer: ^GPUCommandBuffer, texture: ^GPUTexture) ---
-	BlitGPUTexture :: proc(command_buffer: ^GPUCommandBuffer, info: ^GPUBlitInfo) ---
-	WindowSupportsGPUSwapchainComposition :: proc(device: ^GPUDevice, window: Window, swapchain_composition: GPUSwapchainComposition) -> b8 ---
-	WindowSupportsGPUPresentMode :: proc(device: ^GPUDevice, window: Window, present_mode: GPUPresentMode) -> b8 ---
-	ClaimWindowForGPUDevice :: proc(device: ^GPUDevice, window: Window) -> b8 ---
-	ReleaseWindowFromGPUDevice :: proc(device: ^GPUDevice, window: Window) ---
-	SetGPUSwapchainParameters :: proc(device: ^GPUDevice, window: Window, swapchain_composition: GPUSwapchainComposition, present_mode: GPUPresentMode) -> b8 ---
-	GetGPUSwapchainTextureFormat :: proc(device: ^GPUDevice, window: Window) -> GPUTextureFormat ---
-	AcquireGPUSwapchainTexture :: proc(command_buffer: ^GPUCommandBuffer, window: Window, swapchain_texture: ^^GPUTexture, swapchain_texture_width: ^u32, swapchain_texture_height: ^u32) -> b8 ---
-	SubmitGPUCommandBuffer :: proc(command_buffer: ^GPUCommandBuffer) -> b8 ---
-	SubmitGPUCommandBufferAndAcquireFence :: proc(command_buffer: ^GPUCommandBuffer) -> ^GPUFence ---
-	CancelGPUCommandBuffer :: proc(command_buffer: ^GPUCommandBuffer) -> b8 ---
-	WaitForGPUIdle :: proc(device: ^GPUDevice) -> b8 ---
-	WaitForGPUFences :: proc(device: ^GPUDevice, wait_all: b8, fences: ^[^]GPUFence, num_fences: u32) -> b8 ---
-	QueryGPUFence :: proc(device: ^GPUDevice, fence: ^GPUFence) -> b8 ---
-	ReleaseGPUFence :: proc(device: ^GPUDevice, fence: ^GPUFence) ---
+	GenerateMipmapsForGPUTexture :: proc(command_buffer: GPUCommandBuffer, texture: GPUTexture) ---
+	BlitGPUTexture :: proc(command_buffer: GPUCommandBuffer, info: ^GPUBlitInfo) ---
+	WindowSupportsGPUSwapchainComposition :: proc(device: GPUDevice, window: Window, swapchain_composition: GPUSwapchainComposition) -> b8 ---
+	WindowSupportsGPUPresentMode :: proc(device: GPUDevice, window: Window, present_mode: GPUPresentMode) -> b8 ---
+	ClaimWindowForGPUDevice :: proc(device: GPUDevice, window: Window) -> b8 ---
+	ReleaseWindowFromGPUDevice :: proc(device: GPUDevice, window: Window) ---
+	SetGPUSwapchainParameters :: proc(device: GPUDevice, window: Window, swapchain_composition: GPUSwapchainComposition, present_mode: GPUPresentMode) -> b8 ---
+	GetGPUSwapchainTextureFormat :: proc(device: GPUDevice, window: Window) -> GPUTextureFormat ---
+	AcquireGPUSwapchainTexture :: proc(command_buffer: GPUCommandBuffer, window: Window, swapchain_texture: ^^GPUTexture, swapchain_texture_width: ^u32, swapchain_texture_height: ^u32) -> b8 ---
+	SubmitGPUCommandBuffer :: proc(command_buffer: GPUCommandBuffer) -> b8 ---
+	SubmitGPUCommandBufferAndAcquireFence :: proc(command_buffer: GPUCommandBuffer) -> GPUFence ---
+	CancelGPUCommandBuffer :: proc(command_buffer: GPUCommandBuffer) -> b8 ---
+	WaitForGPUIdle :: proc(device: GPUDevice) -> b8 ---
+	WaitForGPUFences :: proc(device: GPUDevice, wait_all: b8, fences: ^[^]GPUFence, num_fences: u32) -> b8 ---
+	QueryGPUFence :: proc(device: GPUDevice, fence: GPUFence) -> b8 ---
+	ReleaseGPUFence :: proc(device: GPUDevice, fence: GPUFence) ---
 	GPUTextureFormatTexelBlockSize :: proc(format: GPUTextureFormat) -> u32 ---
-	GPUTextureSupportsFormat :: proc(device: ^GPUDevice, format: GPUTextureFormat, type: GPUTextureType, usage: GPUTextureUsageFlags) -> b8 ---
-	GPUTextureSupportsSampleCount :: proc(device: ^GPUDevice, format: GPUTextureFormat, sample_count: GPUSampleCount) -> b8 ---
+	GPUTextureSupportsFormat :: proc(device: GPUDevice, format: GPUTextureFormat, type: GPUTextureType, usage: GPUTextureUsageFlags) -> b8 ---
+	GPUTextureSupportsSampleCount :: proc(device: GPUDevice, format: GPUTextureFormat, sample_count: GPUSampleCount) -> b8 ---
 	CalculateGPUTextureFormatSize :: proc(format: GPUTextureFormat, width: u32, height: u32, depth_or_layer_count: u32) -> u32 ---
 	GetHaptics :: proc(count: ^i32) -> ^HapticID ---
 	GetHapticNameForID :: proc(instance_id: HapticID) -> cstring ---
-	OpenHaptic :: proc(instance_id: HapticID) -> ^Haptic ---
-	GetHapticFromID :: proc(instance_id: HapticID) -> ^Haptic ---
-	GetHapticID :: proc(haptic: ^Haptic) -> HapticID ---
-	GetHapticName :: proc(haptic: ^Haptic) -> cstring ---
+	OpenHaptic :: proc(instance_id: HapticID) -> Haptic ---
+	GetHapticFromID :: proc(instance_id: HapticID) -> Haptic ---
+	GetHapticID :: proc(haptic: Haptic) -> HapticID ---
+	GetHapticName :: proc(haptic: Haptic) -> cstring ---
 	IsMouseHaptic :: proc() -> b8 ---
-	OpenHapticFromMouse :: proc() -> ^Haptic ---
-	IsJoystickHaptic :: proc(joystick: ^Joystick) -> b8 ---
-	OpenHapticFromJoystick :: proc(joystick: ^Joystick) -> ^Haptic ---
-	CloseHaptic :: proc(haptic: ^Haptic) ---
-	GetMaxHapticEffects :: proc(haptic: ^Haptic) -> i32 ---
-	GetMaxHapticEffectsPlaying :: proc(haptic: ^Haptic) -> i32 ---
-	GetHapticFeatures :: proc(haptic: ^Haptic) -> u32 ---
-	GetNumHapticAxes :: proc(haptic: ^Haptic) -> i32 ---
-	HapticEffectSupported :: proc(haptic: ^Haptic, effect: ^HapticEffect) -> b8 ---
-	CreateHapticEffect :: proc(haptic: ^Haptic, effect: ^HapticEffect) -> i32 ---
-	UpdateHapticEffect :: proc(haptic: ^Haptic, effect: i32, data: ^HapticEffect) -> b8 ---
-	RunHapticEffect :: proc(haptic: ^Haptic, effect: i32, iterations: u32) -> b8 ---
-	StopHapticEffect :: proc(haptic: ^Haptic, effect: i32) -> b8 ---
-	DestroyHapticEffect :: proc(haptic: ^Haptic, effect: i32) ---
-	GetHapticEffectStatus :: proc(haptic: ^Haptic, effect: i32) -> b8 ---
-	SetHapticGain :: proc(haptic: ^Haptic, gain: i32) -> b8 ---
-	SetHapticAutocenter :: proc(haptic: ^Haptic, autocenter: i32) -> b8 ---
-	PauseHaptic :: proc(haptic: ^Haptic) -> b8 ---
-	ResumeHaptic :: proc(haptic: ^Haptic) -> b8 ---
-	StopHapticEffects :: proc(haptic: ^Haptic) -> b8 ---
-	HapticRumbleSupported :: proc(haptic: ^Haptic) -> b8 ---
-	InitHapticRumble :: proc(haptic: ^Haptic) -> b8 ---
-	PlayHapticRumble :: proc(haptic: ^Haptic, strength: f32, length: u32) -> b8 ---
-	StopHapticRumble :: proc(haptic: ^Haptic) -> b8 ---
+	OpenHapticFromMouse :: proc() -> Haptic ---
+	IsJoystickHaptic :: proc(joystick: Joystick) -> b8 ---
+	OpenHapticFromJoystick :: proc(joystick: Joystick) -> Haptic ---
+	CloseHaptic :: proc(haptic: Haptic) ---
+	GetMaxHapticEffects :: proc(haptic: Haptic) -> i32 ---
+	GetMaxHapticEffectsPlaying :: proc(haptic: Haptic) -> i32 ---
+	GetHapticFeatures :: proc(haptic: Haptic) -> u32 ---
+	GetNumHapticAxes :: proc(haptic: Haptic) -> i32 ---
+	HapticEffectSupported :: proc(haptic: Haptic, effect: ^HapticEffect) -> b8 ---
+	CreateHapticEffect :: proc(haptic: Haptic, effect: ^HapticEffect) -> i32 ---
+	UpdateHapticEffect :: proc(haptic: Haptic, effect: i32, data: ^HapticEffect) -> b8 ---
+	RunHapticEffect :: proc(haptic: Haptic, effect: i32, iterations: u32) -> b8 ---
+	StopHapticEffect :: proc(haptic: Haptic, effect: i32) -> b8 ---
+	DestroyHapticEffect :: proc(haptic: Haptic, effect: i32) ---
+	GetHapticEffectStatus :: proc(haptic: Haptic, effect: i32) -> b8 ---
+	SetHapticGain :: proc(haptic: Haptic, gain: i32) -> b8 ---
+	SetHapticAutocenter :: proc(haptic: Haptic, autocenter: i32) -> b8 ---
+	PauseHaptic :: proc(haptic: Haptic) -> b8 ---
+	ResumeHaptic :: proc(haptic: Haptic) -> b8 ---
+	StopHapticEffects :: proc(haptic: Haptic) -> b8 ---
+	HapticRumbleSupported :: proc(haptic: Haptic) -> b8 ---
+	InitHapticRumble :: proc(haptic: Haptic) -> b8 ---
+	PlayHapticRumble :: proc(haptic: Haptic, strength: f32, length: u32) -> b8 ---
+	StopHapticRumble :: proc(haptic: Haptic) -> b8 ---
 	hid_init :: proc() -> i32 ---
 	hid_exit :: proc() -> i32 ---
 	hid_device_change_count :: proc() -> u32 ---
 	hid_enumerate :: proc(vendor_id: u16, product_id: u16) -> ^hid_device_info ---
 	hid_free_enumeration :: proc(devs: [^]hid_device_info) ---
-	hid_open :: proc(vendor_id: u16, product_id: u16, serial_number: ^i32) -> ^hid_device ---
-	hid_open_path :: proc(path: cstring) -> ^hid_device ---
-	hid_write :: proc(dev: ^hid_device, data: ^u8, length: u64) -> i32 ---
-	hid_read_timeout :: proc(dev: ^hid_device, data: ^u8, length: u64, milliseconds: i32) -> i32 ---
-	hid_read :: proc(dev: ^hid_device, data: ^u8, length: u64) -> i32 ---
-	hid_set_nonblocking :: proc(dev: ^hid_device, nonblock: i32) -> i32 ---
-	hid_send_feature_report :: proc(dev: ^hid_device, data: ^u8, length: u64) -> i32 ---
-	hid_get_feature_report :: proc(dev: ^hid_device, data: ^u8, length: u64) -> i32 ---
-	hid_get_input_report :: proc(dev: ^hid_device, data: ^u8, length: u64) -> i32 ---
-	hid_close :: proc(dev: ^hid_device) -> i32 ---
-	hid_get_manufacturer_string :: proc(dev: ^hid_device, string_p: ^i32, maxlen: u64) -> i32 ---
-	hid_get_product_string :: proc(dev: ^hid_device, string_p: ^i32, maxlen: u64) -> i32 ---
-	hid_get_serial_number_string :: proc(dev: ^hid_device, string_p: ^i32, maxlen: u64) -> i32 ---
-	hid_get_indexed_string :: proc(dev: ^hid_device, string_index: i32, string_p: ^i32, maxlen: u64) -> i32 ---
-	hid_get_device_info :: proc(dev: ^hid_device) -> ^hid_device_info ---
-	hid_get_report_descriptor :: proc(dev: ^hid_device, buf: ^u8, buf_size: u64) -> i32 ---
+	hid_open :: proc(vendor_id: u16, product_id: u16, serial_number: ^i32) -> hid_device ---
+	hid_open_path :: proc(path: cstring) -> hid_device ---
+	hid_write :: proc(dev: hid_device, data: ^u8, length: u64) -> i32 ---
+	hid_read_timeout :: proc(dev: hid_device, data: ^u8, length: u64, milliseconds: i32) -> i32 ---
+	hid_read :: proc(dev: hid_device, data: ^u8, length: u64) -> i32 ---
+	hid_set_nonblocking :: proc(dev: hid_device, nonblock: i32) -> i32 ---
+	hid_send_feature_report :: proc(dev: hid_device, data: ^u8, length: u64) -> i32 ---
+	hid_get_feature_report :: proc(dev: hid_device, data: ^u8, length: u64) -> i32 ---
+	hid_get_input_report :: proc(dev: hid_device, data: ^u8, length: u64) -> i32 ---
+	hid_close :: proc(dev: hid_device) -> i32 ---
+	hid_get_manufacturer_string :: proc(dev: hid_device, string_p: ^i32, maxlen: u64) -> i32 ---
+	hid_get_product_string :: proc(dev: hid_device, string_p: ^i32, maxlen: u64) -> i32 ---
+	hid_get_serial_number_string :: proc(dev: hid_device, string_p: ^i32, maxlen: u64) -> i32 ---
+	hid_get_indexed_string :: proc(dev: hid_device, string_index: i32, string_p: ^i32, maxlen: u64) -> i32 ---
+	hid_get_device_info :: proc(dev: hid_device) -> ^hid_device_info ---
+	hid_get_report_descriptor :: proc(dev: hid_device, buf: ^u8, buf_size: u64) -> i32 ---
 	hid_ble_scan :: proc(active: b8) ---
 	SetHintWithPriority :: proc(name: cstring, value: cstring, priority: HintPriority) -> b8 ---
 	SetHint :: proc(name: cstring, value: cstring) -> b8 ---
@@ -3414,9 +3413,9 @@ foreign sdl3_runic {
 	SetAppMetadata :: proc(appname: cstring, appversion: cstring, appidentifier: cstring) -> b8 ---
 	SetAppMetadataProperty :: proc(name: cstring, value: cstring) -> b8 ---
 	GetAppMetadataProperty :: proc(name: cstring) -> cstring ---
-	LoadObject :: proc(sofile: cstring) -> ^SharedObject ---
-	LoadFunction :: proc(handle: ^SharedObject, name: cstring) -> #type proc "c" () ---
-	UnloadObject :: proc(handle: ^SharedObject) ---
+	LoadObject :: proc(sofile: cstring) -> SharedObject ---
+	LoadFunction :: proc(handle: SharedObject, name: cstring) -> #type proc "c" () ---
+	UnloadObject :: proc(handle: SharedObject) ---
 	GetPreferredLocales :: proc(count: ^i32) -> ^^Locale ---
 	SetLogPriorities :: proc(priority: LogPriority) ---
 	SetLogPriority :: proc(category: i32, priority: LogPriority) ---
@@ -3443,32 +3442,32 @@ foreign sdl3_runic {
 	Metal_GetLayer :: proc(view: MetalView) -> rawptr ---
 	OpenURL :: proc(url: cstring) -> b8 ---
 	GetPlatform :: proc() -> cstring ---
-	CreateProcess :: proc(args: [^]cstring, pipe_stdio: b8) -> ^Process ---
-	CreateProcessWithProperties :: proc(props: PropertiesID) -> ^Process ---
+	CreateProcess :: proc(args: [^]cstring, pipe_stdio: b8) -> Process ---
+	CreateProcessWithProperties :: proc(props: PropertiesID) -> Process ---
 	GetProcessProperties :: proc(process: [^]Process) -> PropertiesID ---
 	ReadProcess :: proc(process: [^]Process, datasize: ^u64, exitcode: ^i32) -> rawptr ---
-	GetProcessInput :: proc(process: [^]Process) -> ^IOStream ---
-	GetProcessOutput :: proc(process: [^]Process) -> ^IOStream ---
+	GetProcessInput :: proc(process: [^]Process) -> IOStream ---
+	GetProcessOutput :: proc(process: [^]Process) -> IOStream ---
 	KillProcess :: proc(process: [^]Process, force: b8) -> b8 ---
 	WaitProcess :: proc(process: [^]Process, block: b8, exitcode: ^i32) -> b8 ---
 	DestroyProcess :: proc(process: [^]Process) ---
 	GetNumRenderDrivers :: proc() -> i32 ---
 	GetRenderDriver :: proc(index: i32) -> cstring ---
-	CreateWindowAndRenderer :: proc(title: cstring, width: i32, height: i32, window_flags: WindowFlags, window: ^^Window, renderer: ^^Renderer) -> b8 ---
-	CreateRenderer :: proc(window: Window, name: cstring) -> ^Renderer ---
-	CreateRendererWithProperties :: proc(props: PropertiesID) -> ^Renderer ---
-	CreateSoftwareRenderer :: proc(surface: ^Surface) -> ^Renderer ---
-	GetRenderer :: proc(window: Window) -> ^Renderer ---
-	GetRenderWindow :: proc(renderer: ^Renderer) -> Window ---
-	GetRendererName :: proc(renderer: ^Renderer) -> cstring ---
-	GetRendererProperties :: proc(renderer: ^Renderer) -> PropertiesID ---
-	GetRenderOutputSize :: proc(renderer: ^Renderer, w: ^i32, h: ^i32) -> b8 ---
-	GetCurrentRenderOutputSize :: proc(renderer: ^Renderer, w: ^i32, h: ^i32) -> b8 ---
-	CreateTexture :: proc(renderer: ^Renderer, format: PixelFormat, access: TextureAccess, w: i32, h: i32) -> ^Texture ---
-	CreateTextureFromSurface :: proc(renderer: ^Renderer, surface: ^Surface) -> ^Texture ---
-	CreateTextureWithProperties :: proc(renderer: ^Renderer, props: PropertiesID) -> ^Texture ---
+	CreateWindowAndRenderer :: proc(title: cstring, width: i32, height: i32, window_flags: WindowFlags, window: ^Window, renderer: ^^Renderer) -> b8 ---
+	CreateRenderer :: proc(window: Window, name: cstring) -> Renderer ---
+	CreateRendererWithProperties :: proc(props: PropertiesID) -> Renderer ---
+	CreateSoftwareRenderer :: proc(surface: ^Surface) -> Renderer ---
+	GetRenderer :: proc(window: Window) -> Renderer ---
+	GetRenderWindow :: proc(renderer: Renderer) -> Window ---
+	GetRendererName :: proc(renderer: Renderer) -> cstring ---
+	GetRendererProperties :: proc(renderer: Renderer) -> PropertiesID ---
+	GetRenderOutputSize :: proc(renderer: Renderer, w: ^i32, h: ^i32) -> b8 ---
+	GetCurrentRenderOutputSize :: proc(renderer: Renderer, w: ^i32, h: ^i32) -> b8 ---
+	CreateTexture :: proc(renderer: Renderer, format: PixelFormat, access: TextureAccess, w: i32, h: i32) -> ^Texture ---
+	CreateTextureFromSurface :: proc(renderer: Renderer, surface: ^Surface) -> ^Texture ---
+	CreateTextureWithProperties :: proc(renderer: Renderer, props: PropertiesID) -> ^Texture ---
 	GetTextureProperties :: proc(texture: ^Texture) -> PropertiesID ---
-	GetRendererFromTexture :: proc(texture: ^Texture) -> ^Renderer ---
+	GetRendererFromTexture :: proc(texture: ^Texture) -> Renderer ---
 	GetTextureSize :: proc(texture: ^Texture, w: ^f32, h: ^f32) -> b8 ---
 	SetTextureColorMod :: proc(texture: ^Texture, r: u8, g: u8, b: u8) -> b8 ---
 	SetTextureColorModFloat :: proc(texture: ^Texture, r: f32, g: f32, b: f32) -> b8 ---
@@ -3488,74 +3487,74 @@ foreign sdl3_runic {
 	LockTexture :: proc(texture: ^Texture, rect: ^Rect, pixels: [^]rawptr, pitch: ^i32) -> b8 ---
 	LockTextureToSurface :: proc(texture: ^Texture, rect: ^Rect, surface: ^^Surface) -> b8 ---
 	UnlockTexture :: proc(texture: ^Texture) ---
-	SetRenderTarget :: proc(renderer: ^Renderer, texture: ^Texture) -> b8 ---
-	GetRenderTarget :: proc(renderer: ^Renderer) -> ^Texture ---
-	SetRenderLogicalPresentation :: proc(renderer: ^Renderer, w: i32, h: i32, mode: RendererLogicalPresentation) -> b8 ---
-	GetRenderLogicalPresentation :: proc(renderer: ^Renderer, w: ^i32, h: ^i32, mode: ^RendererLogicalPresentation) -> b8 ---
-	GetRenderLogicalPresentationRect :: proc(renderer: ^Renderer, rect: ^FRect) -> b8 ---
-	RenderCoordinatesFromWindow :: proc(renderer: ^Renderer, window_x: f32, window_y: f32, x: ^f32, y: ^f32) -> b8 ---
-	RenderCoordinatesToWindow :: proc(renderer: ^Renderer, x: f32, y: f32, window_x: ^f32, window_y: ^f32) -> b8 ---
-	ConvertEventToRenderCoordinates :: proc(renderer: ^Renderer, event: ^Event) -> b8 ---
-	SetRenderViewport :: proc(renderer: ^Renderer, rect: ^Rect) -> b8 ---
-	GetRenderViewport :: proc(renderer: ^Renderer, rect: ^Rect) -> b8 ---
-	RenderViewportSet :: proc(renderer: ^Renderer) -> b8 ---
-	GetRenderSafeArea :: proc(renderer: ^Renderer, rect: ^Rect) -> b8 ---
-	SetRenderClipRect :: proc(renderer: ^Renderer, rect: ^Rect) -> b8 ---
-	GetRenderClipRect :: proc(renderer: ^Renderer, rect: ^Rect) -> b8 ---
-	RenderClipEnabled :: proc(renderer: ^Renderer) -> b8 ---
-	SetRenderScale :: proc(renderer: ^Renderer, scaleX: f32, scaleY: f32) -> b8 ---
-	GetRenderScale :: proc(renderer: ^Renderer, scaleX: ^f32, scaleY: ^f32) -> b8 ---
-	SetRenderDrawColor :: proc(renderer: ^Renderer, r: u8, g: u8, b: u8, a: u8) -> b8 ---
-	SetRenderDrawColorFloat :: proc(renderer: ^Renderer, r: f32, g: f32, b: f32, a: f32) -> b8 ---
-	GetRenderDrawColor :: proc(renderer: ^Renderer, r: ^u8, g: ^u8, b: ^u8, a: ^u8) -> b8 ---
-	GetRenderDrawColorFloat :: proc(renderer: ^Renderer, r: ^f32, g: ^f32, b: ^f32, a: ^f32) -> b8 ---
-	SetRenderColorScale :: proc(renderer: ^Renderer, scale: f32) -> b8 ---
-	GetRenderColorScale :: proc(renderer: ^Renderer, scale: ^f32) -> b8 ---
-	SetRenderDrawBlendMode :: proc(renderer: ^Renderer, blendMode: BlendMode) -> b8 ---
-	GetRenderDrawBlendMode :: proc(renderer: ^Renderer, blendMode: ^BlendMode) -> b8 ---
-	RenderClear :: proc(renderer: ^Renderer) -> b8 ---
-	RenderPoint :: proc(renderer: ^Renderer, x: f32, y: f32) -> b8 ---
-	RenderPoints :: proc(renderer: ^Renderer, points: [^]FPoint, count: i32) -> b8 ---
-	RenderLine :: proc(renderer: ^Renderer, x1: f32, y1: f32, x2: f32, y2: f32) -> b8 ---
-	RenderLines :: proc(renderer: ^Renderer, points: [^]FPoint, count: i32) -> b8 ---
-	RenderRect :: proc(renderer: ^Renderer, rect: ^FRect) -> b8 ---
-	RenderRects :: proc(renderer: ^Renderer, rects: [^]FRect, count: i32) -> b8 ---
-	RenderFillRect :: proc(renderer: ^Renderer, rect: ^FRect) -> b8 ---
-	RenderFillRects :: proc(renderer: ^Renderer, rects: [^]FRect, count: i32) -> b8 ---
-	RenderTexture :: proc(renderer: ^Renderer, texture: ^Texture, srcrect: ^FRect, dstrect: ^FRect) -> b8 ---
-	RenderTextureRotated :: proc(renderer: ^Renderer, texture: ^Texture, srcrect: ^FRect, dstrect: ^FRect, angle: f64, center: ^FPoint, flip: FlipMode) -> b8 ---
-	RenderTextureTiled :: proc(renderer: ^Renderer, texture: ^Texture, srcrect: ^FRect, scale: f32, dstrect: ^FRect) -> b8 ---
-	RenderTexture9Grid :: proc(renderer: ^Renderer, texture: ^Texture, srcrect: ^FRect, left_width: f32, right_width: f32, top_height: f32, bottom_height: f32, scale: f32, dstrect: ^FRect) -> b8 ---
-	RenderGeometry :: proc(renderer: ^Renderer, texture: ^Texture, vertices: [^]Vertex, num_vertices: i32, indices: [^]i32, num_indices: i32) -> b8 ---
-	RenderGeometryRaw :: proc(renderer: ^Renderer, texture: ^Texture, xy: ^f32, xy_stride: i32, color: ^FColor, color_stride: i32, uv: ^f32, uv_stride: i32, num_vertices: i32, indices: rawptr, num_indices: i32, size_indices: i32) -> b8 ---
-	RenderReadPixels :: proc(renderer: ^Renderer, rect: ^Rect) -> ^Surface ---
-	RenderPresent :: proc(renderer: ^Renderer) -> b8 ---
+	SetRenderTarget :: proc(renderer: Renderer, texture: ^Texture) -> b8 ---
+	GetRenderTarget :: proc(renderer: Renderer) -> ^Texture ---
+	SetRenderLogicalPresentation :: proc(renderer: Renderer, w: i32, h: i32, mode: RendererLogicalPresentation) -> b8 ---
+	GetRenderLogicalPresentation :: proc(renderer: Renderer, w: ^i32, h: ^i32, mode: ^RendererLogicalPresentation) -> b8 ---
+	GetRenderLogicalPresentationRect :: proc(renderer: Renderer, rect: ^FRect) -> b8 ---
+	RenderCoordinatesFromWindow :: proc(renderer: Renderer, window_x: f32, window_y: f32, x: ^f32, y: ^f32) -> b8 ---
+	RenderCoordinatesToWindow :: proc(renderer: Renderer, x: f32, y: f32, window_x: ^f32, window_y: ^f32) -> b8 ---
+	ConvertEventToRenderCoordinates :: proc(renderer: Renderer, event: ^Event) -> b8 ---
+	SetRenderViewport :: proc(renderer: Renderer, rect: ^Rect) -> b8 ---
+	GetRenderViewport :: proc(renderer: Renderer, rect: ^Rect) -> b8 ---
+	RenderViewportSet :: proc(renderer: Renderer) -> b8 ---
+	GetRenderSafeArea :: proc(renderer: Renderer, rect: ^Rect) -> b8 ---
+	SetRenderClipRect :: proc(renderer: Renderer, rect: ^Rect) -> b8 ---
+	GetRenderClipRect :: proc(renderer: Renderer, rect: ^Rect) -> b8 ---
+	RenderClipEnabled :: proc(renderer: Renderer) -> b8 ---
+	SetRenderScale :: proc(renderer: Renderer, scaleX: f32, scaleY: f32) -> b8 ---
+	GetRenderScale :: proc(renderer: Renderer, scaleX: ^f32, scaleY: ^f32) -> b8 ---
+	SetRenderDrawColor :: proc(renderer: Renderer, r: u8, g: u8, b: u8, a: u8) -> b8 ---
+	SetRenderDrawColorFloat :: proc(renderer: Renderer, r: f32, g: f32, b: f32, a: f32) -> b8 ---
+	GetRenderDrawColor :: proc(renderer: Renderer, r: ^u8, g: ^u8, b: ^u8, a: ^u8) -> b8 ---
+	GetRenderDrawColorFloat :: proc(renderer: Renderer, r: ^f32, g: ^f32, b: ^f32, a: ^f32) -> b8 ---
+	SetRenderColorScale :: proc(renderer: Renderer, scale: f32) -> b8 ---
+	GetRenderColorScale :: proc(renderer: Renderer, scale: ^f32) -> b8 ---
+	SetRenderDrawBlendMode :: proc(renderer: Renderer, blendMode: BlendMode) -> b8 ---
+	GetRenderDrawBlendMode :: proc(renderer: Renderer, blendMode: ^BlendMode) -> b8 ---
+	RenderClear :: proc(renderer: Renderer) -> b8 ---
+	RenderPoint :: proc(renderer: Renderer, x: f32, y: f32) -> b8 ---
+	RenderPoints :: proc(renderer: Renderer, points: [^]FPoint, count: i32) -> b8 ---
+	RenderLine :: proc(renderer: Renderer, x1: f32, y1: f32, x2: f32, y2: f32) -> b8 ---
+	RenderLines :: proc(renderer: Renderer, points: [^]FPoint, count: i32) -> b8 ---
+	RenderRect :: proc(renderer: Renderer, rect: ^FRect) -> b8 ---
+	RenderRects :: proc(renderer: Renderer, rects: [^]FRect, count: i32) -> b8 ---
+	RenderFillRect :: proc(renderer: Renderer, rect: ^FRect) -> b8 ---
+	RenderFillRects :: proc(renderer: Renderer, rects: [^]FRect, count: i32) -> b8 ---
+	RenderTexture :: proc(renderer: Renderer, texture: ^Texture, srcrect: ^FRect, dstrect: ^FRect) -> b8 ---
+	RenderTextureRotated :: proc(renderer: Renderer, texture: ^Texture, srcrect: ^FRect, dstrect: ^FRect, angle: f64, center: ^FPoint, flip: FlipMode) -> b8 ---
+	RenderTextureTiled :: proc(renderer: Renderer, texture: ^Texture, srcrect: ^FRect, scale: f32, dstrect: ^FRect) -> b8 ---
+	RenderTexture9Grid :: proc(renderer: Renderer, texture: ^Texture, srcrect: ^FRect, left_width: f32, right_width: f32, top_height: f32, bottom_height: f32, scale: f32, dstrect: ^FRect) -> b8 ---
+	RenderGeometry :: proc(renderer: Renderer, texture: ^Texture, vertices: [^]Vertex, num_vertices: i32, indices: [^]i32, num_indices: i32) -> b8 ---
+	RenderGeometryRaw :: proc(renderer: Renderer, texture: ^Texture, xy: ^f32, xy_stride: i32, color: ^FColor, color_stride: i32, uv: ^f32, uv_stride: i32, num_vertices: i32, indices: rawptr, num_indices: i32, size_indices: i32) -> b8 ---
+	RenderReadPixels :: proc(renderer: Renderer, rect: ^Rect) -> ^Surface ---
+	RenderPresent :: proc(renderer: Renderer) -> b8 ---
 	DestroyTexture :: proc(texture: ^Texture) ---
-	DestroyRenderer :: proc(renderer: ^Renderer) ---
-	FlushRenderer :: proc(renderer: ^Renderer) -> b8 ---
-	GetRenderMetalLayer :: proc(renderer: ^Renderer) -> rawptr ---
-	GetRenderMetalCommandEncoder :: proc(renderer: ^Renderer) -> rawptr ---
-	AddVulkanRenderSemaphores :: proc(renderer: ^Renderer, wait_stage_mask: u32, wait_semaphore: i64, signal_semaphore: i64) -> b8 ---
-	SetRenderVSync :: proc(renderer: ^Renderer, vsync: i32) -> b8 ---
-	GetRenderVSync :: proc(renderer: ^Renderer, vsync: ^i32) -> b8 ---
-	RenderDebugText :: proc(renderer: ^Renderer, x: f32, y: f32, str: cstring) -> b8 ---
-	OpenTitleStorage :: proc(override: cstring, props: PropertiesID) -> ^Storage ---
-	OpenUserStorage :: proc(org: cstring, app: cstring, props: PropertiesID) -> ^Storage ---
-	OpenFileStorage :: proc(path: cstring) -> ^Storage ---
-	OpenStorage :: proc(iface: ^StorageInterface, userdata: rawptr) -> ^Storage ---
-	CloseStorage :: proc(storage: ^Storage) -> b8 ---
-	StorageReady :: proc(storage: ^Storage) -> b8 ---
-	GetStorageFileSize :: proc(storage: ^Storage, path: cstring, length: ^u64) -> b8 ---
-	ReadStorageFile :: proc(storage: ^Storage, path: cstring, destination: rawptr, length: u64) -> b8 ---
-	WriteStorageFile :: proc(storage: ^Storage, path: cstring, source: rawptr, length: u64) -> b8 ---
-	CreateStorageDirectory :: proc(storage: ^Storage, path: cstring) -> b8 ---
-	EnumerateStorageDirectory :: proc(storage: ^Storage, path: cstring, callback: EnumerateDirectoryCallback, userdata: rawptr) -> b8 ---
-	RemoveStoragePath :: proc(storage: ^Storage, path: cstring) -> b8 ---
-	RenameStoragePath :: proc(storage: ^Storage, oldpath: cstring, newpath: cstring) -> b8 ---
-	CopyStorageFile :: proc(storage: ^Storage, oldpath: cstring, newpath: cstring) -> b8 ---
-	GetStoragePathInfo :: proc(storage: ^Storage, path: cstring, info: ^PathInfo) -> b8 ---
-	GetStorageSpaceRemaining :: proc(storage: ^Storage) -> u64 ---
-	GlobStorageDirectory :: proc(storage: ^Storage, path: cstring, pattern: cstring, flags: GlobFlags, count: ^i32) -> ^cstring ---
+	DestroyRenderer :: proc(renderer: Renderer) ---
+	FlushRenderer :: proc(renderer: Renderer) -> b8 ---
+	GetRenderMetalLayer :: proc(renderer: Renderer) -> rawptr ---
+	GetRenderMetalCommandEncoder :: proc(renderer: Renderer) -> rawptr ---
+	AddVulkanRenderSemaphores :: proc(renderer: Renderer, wait_stage_mask: u32, wait_semaphore: i64, signal_semaphore: i64) -> b8 ---
+	SetRenderVSync :: proc(renderer: Renderer, vsync: i32) -> b8 ---
+	GetRenderVSync :: proc(renderer: Renderer, vsync: ^i32) -> b8 ---
+	RenderDebugText :: proc(renderer: Renderer, x: f32, y: f32, str: cstring) -> b8 ---
+	OpenTitleStorage :: proc(override: cstring, props: PropertiesID) -> Storage ---
+	OpenUserStorage :: proc(org: cstring, app: cstring, props: PropertiesID) -> Storage ---
+	OpenFileStorage :: proc(path: cstring) -> Storage ---
+	OpenStorage :: proc(iface: ^StorageInterface, userdata: rawptr) -> Storage ---
+	CloseStorage :: proc(storage: Storage) -> b8 ---
+	StorageReady :: proc(storage: Storage) -> b8 ---
+	GetStorageFileSize :: proc(storage: Storage, path: cstring, length: ^u64) -> b8 ---
+	ReadStorageFile :: proc(storage: Storage, path: cstring, destination: rawptr, length: u64) -> b8 ---
+	WriteStorageFile :: proc(storage: Storage, path: cstring, source: rawptr, length: u64) -> b8 ---
+	CreateStorageDirectory :: proc(storage: Storage, path: cstring) -> b8 ---
+	EnumerateStorageDirectory :: proc(storage: Storage, path: cstring, callback: EnumerateDirectoryCallback, userdata: rawptr) -> b8 ---
+	RemoveStoragePath :: proc(storage: Storage, path: cstring) -> b8 ---
+	RenameStoragePath :: proc(storage: Storage, oldpath: cstring, newpath: cstring) -> b8 ---
+	CopyStorageFile :: proc(storage: Storage, oldpath: cstring, newpath: cstring) -> b8 ---
+	GetStoragePathInfo :: proc(storage: Storage, path: cstring, info: ^PathInfo) -> b8 ---
+	GetStorageSpaceRemaining :: proc(storage: Storage) -> u64 ---
+	GlobStorageDirectory :: proc(storage: Storage, path: cstring, pattern: cstring, flags: GlobFlags, count: ^i32) -> ^cstring ---
 	SetX11EventHook :: proc(callback: X11EventHook, userdata: rawptr) ---
 	SetLinuxThreadPriority :: proc(threadID: i64, priority: i32) -> b8 ---
 	SetLinuxThreadPriorityAndPolicy :: proc(threadID: i64, sdlPriority: i32, schedPolicy: i32) -> b8 ---
